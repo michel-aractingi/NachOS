@@ -1,5 +1,12 @@
 #!/bin/sh
 
+# To compile NachOS on a Debian environment (x86), you need to
+# install the folowing packages:
+#  build-essential
+#  g++-multilib (on x86-64 only)
+# and a MIPS cross-compiler. See below.
+
+
 # At the end of the document, you will find a script that can help
 # to create a cross-compiler on Debian. However, currently (11/2011),
 # Debian is migrating toward multiarch and the script does not work.
@@ -39,6 +46,24 @@ i*86)
 	exit 1
 esac
 
+install_package() {
+	echo "**************************************************************"
+	echo "* Installing the $1 package from your distrib"
+	echo "* $2"
+	echo "**************************************************************"
+	echo "* Refuse the installation (and try to install it yourself    *"
+	echo "* with your usual package manager) if something seems wrong  *"
+	echo "* (packages that need to be removed, to many packages        *"
+	echo "* upgraded, ...)                                             *"
+	echo "**************************************************************"
+	$ROOT apt-get update
+	$ROOT apt-get install $1
+}
+
+if [ -z "$(which wget)" ]; then
+	install_package wget "to download Vincent Danjean public key"
+fi 
+
 # install a new sources of Debian package
 if [ -f /etc/apt/sources.list.d/nachos.list ]; then
 	$ROOT sed -e 's/ nachos/ mipsel-cross/' -i /etc/apt/sources.list.d/nachos.list
@@ -63,16 +88,7 @@ if dpkg -l g++-multilib | grep -s '^ii' ; then
 	:
 else
 	if test "$ARCH" = amd64 ; then
-		echo "**************************************************************"
-		echo "* Installing the g++-multilib package from your distrib      *"
-		echo "* in order to compile NachOS                                 *"
-		echo "**************************************************************"
-		echo "* Refuse the installation (and try to install it yourself    *"
-		echo "* with your usual package manager) if something seems wrong  *"
-		echo "* (packages that need to be removed, to many packages        *"
-		echo "* upgraded, ...)                                             *"
-		echo "**************************************************************"
-		$ROOT apt-get install g++-multilib
+		install_package g++-multilib "in order to compile NachOS"
 	fi
 fi
 
