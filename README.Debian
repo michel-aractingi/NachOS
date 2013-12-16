@@ -47,6 +47,7 @@ i*86)
 esac
 
 install_package() {
+	$ROOT apt-get update
 	echo "**************************************************************"
 	echo "* Installing the $1 package from your distrib"
 	echo "* $2"
@@ -56,7 +57,6 @@ install_package() {
 	echo "* (packages that need to be removed, to many packages        *"
 	echo "* upgraded, ...)                                             *"
 	echo "**************************************************************"
-	$ROOT apt-get update
 	$ROOT apt-get install $1
 }
 
