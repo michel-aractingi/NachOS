@@ -6,20 +6,10 @@
 #ifndef _bool_h
 #define _bool_h 1
 
-#include   <_G_config.h>
-
-#if _G_HAVE_BOOL
+// 'true' and 'false' are c++ keywords.
 #undef TRUE
 #undef FALSE
 #define TRUE true
 #define FALSE false
-#else
-#undef FALSE
-#undef TRUE
-#undef true
-#undef false
-enum bool
-{ FALSE = 0, false = 0, TRUE = 1, true = 1 };
-#endif
 
 #endif
