@@ -148,8 +148,8 @@ mips-progs: $3
 $3: TARGET=MIPS
 $3: LDFLAGS+=-Wl,-T,$(topsrc_dir)/test/script -Wl,-N
 # LB: Caution! start.o should appear *before* $^ for the load!
-$3.coff: %.coff: $$(strip $$(addprefix $$(call serie-get-PREFIX,$2),$$(call userprog-get-OFILES,$1))) $(topsrc_dir)/test/script
-	$$(lko_V)$$(LINK.o) $$(addprefix $$(call serie-get-PREFIX,$2),start.o) \
+$3.coff: %.coff: $$(strip $$(call addprefix-dir,$$(call serie-get-PREFIX,$2),$$(call userprog-get-OFILES,$1))) $(topsrc_dir)/test/script
+	$$(lko_V)$$(LINK.o) $$(call addprefix-dir,$$(call serie-get-PREFIX,$2),start.o) \
 		$$(filter-out %start.o,$$(filter %.o,$$^)) $$(LOADLIBES) $$(LDLIBS) -o $$@
 
 # Avoid leaving .coff files after successful compilation
@@ -173,23 +173,29 @@ define nachos-userprog-obj-rules # 1:serie
   $$(eval $$(call nachos-userprog-obj-rules2,$1,$$(call serie-get-PREFIX,$1),$$(call serie-get-SOURCES,$1),\
      $$(call serie-get-OFILES,$1)))
 endef
-define nachos-userprog-obj-rules2 # 1:serie 2:prefix 3:sources 4:ofiles
-#$$(warning defining NachOS userprog serie $1/$2/$3/$4)
 
-$$(addprefix $2,$4): $$(filter-out .%.d,$$(MAKEFILE_LIST))
-$$(patsubst %.o,.%.d,$$(addprefix $2,$4)): $$(filter-out .%.d,$$(MAKEFILE_LIST))
+objs-to-depends=$(foreach o,$1, $(filter-out ./,$(dir $o))$(patsubst %.o,.$2%.d,$(notdir $o)))
+addprefix-dir=$(foreach o,$2, $(filter-out ./,$(dir $o))$(addprefix $1,$(notdir $o)))
+
+define nachos-userprog-obj-rules2 # 1:serie 2:prefix 3:sources 4:ofiles
+$$(warning defining NachOS userprog serie $1/$2/$3/$4)
 
 ifneq ($$(MAKECMDGOALS),clean)
--include $$(patsubst %.o,.%.d,$$(addprefix $2,$4))
+-include $$(call objs-to-depends,$4,$2)
 endif
 
+$$(warning $$(call addprefix-dir,$2,$4): $$(filter-out %.d,$$(MAKEFILE_LIST)))
+$$(call addprefix-dir,$2,$4): $$(filter-out %.d,$$(MAKEFILE_LIST))
+$$(call objs-to-depends,$4,$2): $$(filter-out %.d,$$(MAKEFILE_LIST))
+
 clean::
-	$$(RM) $$(addprefix $2,$4)
-	$$(RM) $$(patsubst %.o,.%.d,$$(addprefix $2,$4))
+	$$(RM) $$(call addprefix-dir,$2,$4)
+	$$(RM) $$(call objs-to-depends,$4,$2)
 
 # Add include directories from the list in INCDIRS
-$$(addprefix $2,$4): CPPFLAGS += $$(call serie-get-CPPFLAGS,$1)
-$$(addprefix $2,$4): CFLAGS += -DIN_USER_MODE -Wall
+$$(warning $$(call addprefix-dir,$2,$4): CPPFLAGS += $$(call serie-get-CPPFLAGS,$1))
+$$(call addprefix-dir,$2,$4): CPPFLAGS += $$(call serie-get-CPPFLAGS,$1)
+$$(call addprefix-dir,$2,$4): CFLAGS += -DIN_USER_MODE -Wall
 
 $$(foreach source,$$(filter %.c,$3), \
   $$(eval $$(call gen-rules-C,MIPS,$2,$$(source))))
@@ -205,24 +211,28 @@ COMPILE.S = $(CC) $(ASFLAGS) $(CPPFLAGS) $(TARGET_MACH) -c
 COMPILE.c = $(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c
 COMPILE.cc = $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c
 
-define gen-rules-lang # 1:HOST/MIPS 2:prefix 3:object 4:lang 5:show_prefix
-$3: TARGET=$1
-$3: $2%.o: %.$4
-	$$($5_V)$$(COMPILE.$4) $$(if $$(OLD_GCC_$1),,-MMD -MF .$2$$*.d) $$(OUTPUT_OPTION) $$<
-	$$(dep_V)$$(if $$(OLD_GCC_$1),$$(patsubst -c,-MM,$$(COMPILE.$4)) $$< > .$2$$*.d)
-	$$(dep_V)cp .$2$$*.d .$2$$*.dd && \
-	sed < .$2$$*.dd -e 's/^.*://' -e 's/\([^\\]\)$$$$/\1:/' >> .$2$$*.d && \
-	rm .$2$$*.dd
+define gen-rules-lang2 # 1:HOST/MIPS 2:prefix 3:depend 4:target 5:source 6:lang 7:show_prefix
+$4: TARGET=$1
+$4: $5
+	$$(dep_V)mkdir -p $$(dir $$@)
+	$$($7_V)$$(COMPILE.$6) $$(if $$(OLD_GCC_$1),,-MMD -MF $3) $$(OUTPUT_OPTION) $$<
+	$$(dep_V)$$(if $$(OLD_GCC_$1),$$(patsubst -c,-MM,$$(COMPILE.$6)) $$< > $$(call objs-to-depends,$3,$2))
+	$$(dep_V)cp $$(call objs-to-depends,$3,$2) $$(call objs-to-depends,$3,$2)d && \
+	sed < $$(call objs-to-depends,$3,$2)d -e 's/^.*://' -e 's/\([^\\]\)$$$$/\1:/' >> $$(call objs-to-depends,$3,$2) && \
+	rm $$(call objs-to-depends,$3,$2)d
 endef
 
+define gen-rules-lang # 1:HOST/MIPS 2:prefix 3:source 4:lang 5:show_prefix
+$$(eval $$(call gen-rules-lang2,$1,$2,$$(call objs-to-depends,$$(patsubst %.$4,%.o,$3),$2),$$(call addprefix-dir,$2,$$(patsubst %.$4,%.o,$3)),$3,$4,$5))
+endef
 define gen-rules-C # 1:HOST/MIPS 2:prefix 3:source
-$$(eval $$(call gen-rules-lang,$1,$2,$$(addprefix $2,$$(patsubst %.c,%.o,$3)),c,cc))
+$$(eval $$(call gen-rules-lang,$1,$2,$3,c,cc))
 endef
 define gen-rules-CC # 1:HOST/MIPS 2:prefix 3:source
-$$(eval $$(call gen-rules-lang,$1,$2,$$(addprefix $2,$$(patsubst %.cc,%.o,$3)),cc,cxx))
+$$(eval $$(call gen-rules-lang,$1,$2,$3,cc,cxx))
 endef
 define gen-rules-S # 1:HOST/MIPS 2:prefix 3:source
-$$(eval $$(call gen-rules-lang,$1,$2,$$(addprefix $2,$$(patsubst %.S,%.o,$3)),S,s))
+$$(eval $$(call gen-rules-lang,$1,$2,$3,S,s))
 endef
 ###########################################################################
 
@@ -284,7 +294,7 @@ include $(topsrc_dir)/Makefile.define-user
 $(foreach p,$(patsubst %.c,%,\
 		$(filter-out $(USERPROG_NOPROGRAM) \
 			$(addsuffix .c,$(ORIG_USERPROGS)),\
-		$(notdir $(wildcard $(topsrc_dir)/test/*.c)))),\
+		$(shell find ../test -iname "*.c" -printf "%P\n"))),\
 	$(eval $(call define-userprog,$p,\
 		$p.c $(USERPROG_LIBS) $($p_EXTRA_SOURCES),,userprog threads)))
 
