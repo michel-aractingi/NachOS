@@ -178,13 +178,13 @@ objs-to-depends=$(foreach o,$1, $(filter-out ./,$(dir $o))$(patsubst %.o,.$2%.d,
 addprefix-dir=$(foreach o,$2, $(filter-out ./,$(dir $o))$(addprefix $1,$(notdir $o)))
 
 define nachos-userprog-obj-rules2 # 1:serie 2:prefix 3:sources 4:ofiles
-$$(warning defining NachOS userprog serie $1/$2/$3/$4)
+#$$(warning defining NachOS userprog serie $1/$2/$3/$4)
 
 ifneq ($$(MAKECMDGOALS),clean)
 -include $$(call objs-to-depends,$4,$2)
 endif
 
-$$(warning $$(call addprefix-dir,$2,$4): $$(filter-out %.d,$$(MAKEFILE_LIST)))
+#$$(warning $$(call addprefix-dir,$2,$4): $$(filter-out %.d,$$(MAKEFILE_LIST)))
 $$(call addprefix-dir,$2,$4): $$(filter-out %.d,$$(MAKEFILE_LIST))
 $$(call objs-to-depends,$4,$2): $$(filter-out %.d,$$(MAKEFILE_LIST))
 
@@ -193,7 +193,7 @@ clean::
 	$$(RM) $$(call objs-to-depends,$4,$2)
 
 # Add include directories from the list in INCDIRS
-$$(warning $$(call addprefix-dir,$2,$4): CPPFLAGS += $$(call serie-get-CPPFLAGS,$1))
+#$$(warning $$(call addprefix-dir,$2,$4): CPPFLAGS += $$(call serie-get-CPPFLAGS,$1))
 $$(call addprefix-dir,$2,$4): CPPFLAGS += $$(call serie-get-CPPFLAGS,$1)
 $$(call addprefix-dir,$2,$4): CFLAGS += -DIN_USER_MODE -Wall
 
