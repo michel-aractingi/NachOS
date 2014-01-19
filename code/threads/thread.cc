@@ -34,12 +34,18 @@
 
 Thread::Thread (const char *threadName)
 {
+    int r;
     name = threadName;
     stackTop = NULL;
     stack = NULL;
     status = JUST_CREATED;
 #ifdef USER_PROGRAM
     space = NULL;
+    // FBT: Need to initialize special registers of simulator to 0
+    // in particular LoadReg or it could crash when switching
+    // user threads.
+    for (r=NumGPRegs; r<NumTotalRegs; r++)
+      userRegisters[r] = 0;
 #endif
 }
 
