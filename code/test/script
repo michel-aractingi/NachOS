@@ -47,6 +47,7 @@ SECTIONS
         *(.reginfo)
         *(.options)
         *(.MIPS.options)
+        *(.MIPS.abiflags)
         *(.debug*)
         *(.line)
         *(.mdebug*)
