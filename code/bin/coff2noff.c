@@ -164,12 +164,13 @@ int main (int argc, char **argv)
     lseek(fdOut, inNoffFile, 0);
     printf("Loading %d sections:\n", numsections);
     for (i = 0; i < numsections; i++) {
-	printf("\t\"%s\", filepos 0x%lx, mempos 0x%lx, size 0x%lx\n",
-	      sections[i].s_name, sections[i].s_scnptr,
-	      sections[i].s_paddr, sections[i].s_size);
+	printf("\t\"%.8s\", filepos 0x%lx, mempos 0x%lx, size 0x%lx, flags 0x%lx\n",
+	       sections[i].s_name, sections[i].s_scnptr,
+	       sections[i].s_paddr, sections[i].s_size,
+	       sections[i].s_flags);
 	if (sections[i].s_size == 0) {
 		/* do nothing! */	
-	} else if (!strcmp(sections[i].s_name, ".text")) {
+	} else if (!strncmp(sections[i].s_name, ".text", 8)) {
 	    noffH.code.virtualAddr = sections[i].s_paddr;
 	    noffH.code.inFileAddr = inNoffFile;
 	    noffH.code.size = sections[i].s_size;
@@ -179,7 +180,7 @@ int main (int argc, char **argv)
     	    Write(fdOut, buffer, sections[i].s_size);
     	    free(buffer);
 	    inNoffFile += sections[i].s_size;
- 	} else if (!strcmp(sections[i].s_name, ".data")
+	} else if (!strncmp(sections[i].s_name, ".data", 8)
 	  		|| !strcmp(sections[i].s_name, ".rdata")) {
   	    /* need to check if we have both .data and .rdata 
 	     *  -- make sure one or the other is empty! */ 
@@ -197,7 +198,7 @@ int main (int argc, char **argv)
     	    Write(fdOut, buffer, sections[i].s_size);
     	    free(buffer);
 	    inNoffFile += sections[i].s_size;
-	} else if (!strcmp(sections[i].s_name, ".bss") ||
+	} else if (!strncmp(sections[i].s_name, ".bss", 8) ||
 			!strcmp(sections[i].s_name, ".sbss")) {
   	    /* need to check if we have both .bss and .sbss -- make sure they 
 	     * are contiguous
@@ -216,7 +217,32 @@ int main (int argc, char **argv)
 	    }
 	    /* we don't need to copy the uninitialized data! */
 	} else {
-	    fprintf(stderr, "Unknown segment type: %s\n", sections[i].s_name);
+	    fprintf(stderr, "Unknown segment type: %.8s\n", sections[i].s_name);
+	    printf("\tFound %.8s section with contents:\n", sections[i].s_name);
+	    lseek(fdIn, sections[i].s_scnptr, 0);
+	    buffer = malloc(sections[i].s_size);
+	    Read(fdIn, buffer, sections[i].s_size);
+	    char *car, *car2, *car_lim;
+	    for(car=buffer; car<buffer+sections[i].s_size; car +=8) {
+		    printf("\t\t");
+		    car_lim=car+8;
+		    if (car_lim > buffer+sections[i].s_size) {
+			    car_lim = buffer+sections[i].s_size;
+		    }
+		    for(car2=car; car2<car_lim; car2++) {
+			    printf("%02x ", *car2);
+		    }
+		    for(car2=car; car2<car_lim; car2++) {
+			    if (0 <= *car2 && *car2 <=31) {
+				    printf(".");
+			    } else {
+				    printf("%c", *car2);
+			    }
+		    }
+		    printf("\n");
+	    }
+	    Write(fdOut, buffer, sections[i].s_size);
+	    free(buffer);
             unlink(noffFileName);
 	    exit(1);
 	}
