@@ -14,6 +14,7 @@ all: build
 build build-origin: bin
 	$(MAKE) -C $@
 
+.PHONY: bin
 bin:
 	$(MAKE) -C bin
 
@@ -22,7 +23,7 @@ mips-progs:
 
 check: origin build
 
-origin:
+origin: bin
 	@set -e; RET= ;\
 	$(MAKE) -C build-origin || RET="1" ;\
 	if [ -n "$$RET" ]; then \
