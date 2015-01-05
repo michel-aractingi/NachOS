@@ -47,7 +47,16 @@ i*86)
 esac
 
 install_package() {
-	$ROOT apt-get update
+	local UPDATE=
+	if [ "$1" = --no-update ]; then
+		UPDATE=": skipping "
+		shift
+	fi
+	$UPDATE $ROOT apt-get update
+	if dpkg -l "$1" | grep -s '^ii' ; then
+		return 0
+	fi
+	set +x
 	echo "**************************************************************"
 	echo "* Installing the $1 package from your distrib"
 	echo "* $2"
@@ -57,8 +66,39 @@ install_package() {
 	echo "* (packages that need to be removed, to many packages        *"
 	echo "* upgraded, ...)                                             *"
 	echo "**************************************************************"
+	set -x
 	$ROOT apt-get install $1
 }
+
+# choose installation method
+if apt-cache policy gcc-mipsel-linux-gnu | tail -1 | grep -v '^N: ' ; then
+	echo "MIPS cross compiler seems available in your distrib. Trying to use it"
+	if ! dpkg --print-foreign-architectures | grep -sq mipsel ; then
+		echo "Adding mipsel as a foreign architecture on your system"
+		$ROOT dpkg --add-architecture mipsel
+	fi
+	if test "$ARCH" = amd64 ; then
+		GCC_VER=$(gcc --version | head -1 | \
+			sed -e 's/.* \([0-9]\+\.[0-9]\+\)\.[0-9]\+$/\1/p;d')
+		if [ -z "$GCC_VER" ]; then
+			echo "Cannot find your GCC version. Aborting."
+			exit 1
+		fi
+		if ! dpkg --print-foreign-architectures | grep -sq i386 ; then
+			echo "Adding i386 as a foreign architecture on your system"
+			$ROOT dpkg --add-architecture i386
+		fi
+	fi
+	install_package gcc-mipsel-linux-gnu "Installing the cross-compiler of your distrib. gcc-multiarch and g++-multiarch might be asked to be removed"
+	if test "$ARCH" = amd64 ; then
+		install_package --no-update libc6-dev:i386 "in order to compile NachOS on amd64 systems"
+		install_package --no-update lib32stdc++-$GCC_VER-dev "in order to compile NachOS on amd64 systems"
+	fi
+
+	echo "Ok, you should be able to compile NachOS"
+
+	exit 0
+fi
 
 if [ -z "$(which wget)" ]; then
 	install_package wget "to download Vincent Danjean public key"
@@ -84,12 +124,8 @@ $ROOT apt-get update
 # install the cross-compiler
 $ROOT apt-get install gcc-4.4-mipsel-linux-gnu
 
-if dpkg -l g++-multilib | grep -s '^ii' ; then
-	:
-else
-	if test "$ARCH" = amd64 ; then
-		install_package g++-multilib "in order to compile NachOS"
-	fi
+if test "$ARCH" = amd64 ; then
+	install_package g++-multilib "in order to compile NachOS"
 fi
 
 echo "Ok, you should be able to compile NachOS"
