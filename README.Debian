@@ -71,7 +71,10 @@ install_package() {
 }
 
 # choose installation method
-if apt-cache policy gcc-mipsel-linux-gnu | tail -1 | grep -v '^N: ' ; then
+if [ "$(apt-cache -q policy gcc-mipsel-linux-gnu)" == "" ] ; then
+	echo "MIPS cross compiler does not seem available in your distrib."
+	echo "Use mandelbrot or a virtual machine"
+else
 	echo "MIPS cross compiler seems available in your distrib. Trying to use it"
 	if ! dpkg --print-foreign-architectures | grep -sq mipsel ; then
 		echo "Adding mipsel as a foreign architecture on your system"
@@ -79,7 +82,7 @@ if apt-cache policy gcc-mipsel-linux-gnu | tail -1 | grep -v '^N: ' ; then
 	fi
 	if test "$ARCH" = amd64 ; then
 		GCC_VER=$(gcc --version | head -1 | \
-			sed -e 's/.* \([0-9]\+\.[0-9]\+\)\.[0-9]\+$/\1/p;d')
+			sed -e 's/.* \([0-9]\+\.[0-9]\+\)\.[0-9]\+\( .*\)\?$/\1/p;d')
 		if [ -z "$GCC_VER" ]; then
 			echo "Cannot find your GCC version. Aborting."
 			exit 1
@@ -91,8 +94,12 @@ if apt-cache policy gcc-mipsel-linux-gnu | tail -1 | grep -v '^N: ' ; then
 	fi
 	install_package gcc-mipsel-linux-gnu "Installing the cross-compiler of your distrib. gcc-multiarch and g++-multiarch might be asked to be removed"
 	if test "$ARCH" = amd64 ; then
-		install_package --no-update libc6-dev:i386 "in order to compile NachOS on amd64 systems"
-		install_package --no-update lib32stdc++-$GCC_VER-dev "in order to compile NachOS on amd64 systems"
+		if [ "$(apt-cache -q policy g++-5-multilib)" != "" ] ; then
+			install_package --no-update g++-5-multilib
+		else
+			install_package --no-update libc6-dev:i386 "in order to compile NachOS on amd64 systems"
+			install_package --no-update lib32stdc++-$GCC_VER-dev "in order to compile NachOS on amd64 systems"
+		fi
 	fi
 
 	echo "Ok, you should be able to compile NachOS"
