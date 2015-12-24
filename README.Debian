@@ -100,36 +100,6 @@ if apt-cache policy gcc-mipsel-linux-gnu | tail -1 | grep -v '^N: ' ; then
 	exit 0
 fi
 
-if [ -z "$(which wget)" ]; then
-	install_package wget "to download Vincent Danjean public key"
-fi 
-
-# install a new sources of Debian package
-if [ -f /etc/apt/sources.list.d/nachos.list ]; then
-	$ROOT sed -e 's/ nachos/ mipsel-cross/' -i /etc/apt/sources.list.d/nachos.list
-	echo "File /etc/apt/sources.list.d/nachos.list already installed"
-else
-	echo "deb http://moais.imag.fr/membres/vincent.danjean/debian sid mipsel-cross" | \
-		$ROOT bash -c "cat > /etc/apt/sources.list.d/nachos.list"
-fi
-# install the gpg key of the archive
-echo "Installing the key of the archive"
-echo "Check it if you are concerned by security (you should)"
-wget -O - http://moais.imag.fr/membres/vincent.danjean/pubkey.asc | \
-	$ROOT apt-key add -
-
-# update the list of available packages
-$ROOT apt-get update
-
-# install the cross-compiler
-$ROOT apt-get install gcc-4.4-mipsel-linux-gnu
-
-if test "$ARCH" = amd64 ; then
-	install_package g++-multilib "in order to compile NachOS"
-fi
-
-echo "Ok, you should be able to compile NachOS"
-
 # never go further: creating a MIPS cross-compiler is not working for now
 exit 0
 
