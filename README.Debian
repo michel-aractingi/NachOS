@@ -100,6 +100,7 @@ else
 			echo "Cannot find your GCC version. Aborting."
 			exit 1
 		fi
+		GCC_VER_MAJ=$(echo $GCC_VER | cut -d . -f 1)"
 		if ! dpkg --print-foreign-architectures | grep -sq i386 ; then
 			echo "Adding i386 as a foreign architecture on your system"
 			$ROOT dpkg --add-architecture i386
@@ -107,9 +108,10 @@ else
 	fi
 	install_package gcc-mipsel-linux-gnu "Installing the cross-compiler of your distrib. gcc-multiarch and g++-multiarch might be asked to be removed"
 	if test "$ARCH" = amd64 ; then
-		if [ "$(apt-cache -q policy g++-5-multilib)" != "" ] ; then
-			install_package --no-update g++-5-multilib
+		if [ "$(apt-cache -q policy g++-${GCC_VER_MAJ}-multilib)" != "" ] ; then
+			install_package --no-update g++-${GCC_VER_MAJ}-multilib
 		else
+			# before gcc 5
 			install_package --no-update libc6-dev:i386 "in order to compile NachOS on amd64 systems"
 			install_package --no-update lib32stdc++-$GCC_VER-dev "in order to compile NachOS on amd64 systems"
 		fi
@@ -120,8 +122,23 @@ else
 	exit 0
 fi
 
+
+############################################################################
+
+                   ####### #     # ######
+                   #       ##    # #     #
+                   #       # #   # #     #
+                   #####   #  #  # #     #
+                   #       #   # # #     #
+                   #       #    ## #     #
+                   ####### #     # ######
+
 # never go further: creating a MIPS cross-compiler is not working for now
+
 exit 0
+
+############################################################################
+
 
 # Here is a script to build and install a cross compiler to be used on Nachos
 #
