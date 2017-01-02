@@ -100,7 +100,7 @@ else
 			echo "Cannot find your GCC version. Aborting."
 			exit 1
 		fi
-		GCC_VER_MAJ=$(echo $GCC_VER | cut -d . -f 1)"
+		GCC_VER_MAJ="$(echo $GCC_VER | cut -d . -f 1)"
 		if ! dpkg --print-foreign-architectures | grep -sq i386 ; then
 			echo "Adding i386 as a foreign architecture on your system"
 			$ROOT dpkg --add-architecture i386
