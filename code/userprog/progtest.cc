@@ -83,12 +83,35 @@ ConsoleTest (char *in, char *out)
     readAvail = new Semaphore ("read avail", 0);
     writeDone = new Semaphore ("write done", 0);
 
+    int begin = 1;       //BEGIN flag to indicate a beginning of a line
     for (;;)
-    {
-      readAvail->P ();  // wait for character to arrive
-      ch = console->GetChar ();
-      if (ch == EOF) return;
-      console->PutChar (ch);    // echo it!
-      writeDone->P ();  // wait for write to finish
-    }
+      {
+	  //writeDone->P();
+  
+	  readAvail->P ();	// wait for character to arrive
+	  
+	  ch = console->GetChar ();
+	  if ( ch == EOF ) return;
+		
+          if (begin) {
+            console->PutChar('<');
+            begin = 0;
+	    writeDone->P();
+          }
+	 
+          if (ch == '\n' ){
+		 console->PutChar('>');
+		 writeDone->P();
+		 console->PutChar('\n');	
+	       	 begin = 1; 
+          }
+	
+          
+	  else	  console->PutChar (ch);        // echo it! 
+          
+	  writeDone->P ();      // wait for write to finish
+
+	  if (ch == 'q')
+	      return;		// if q, quit
+      }
 }
