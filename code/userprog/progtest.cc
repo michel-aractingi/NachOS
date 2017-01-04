@@ -90,7 +90,5 @@ ConsoleTest (char *in, char *out)
       if (ch == EOF) return;
       console->PutChar (ch);    // echo it!
       writeDone->P ();  // wait for write to finish
-      if (ch == 'q')
-          return;       // if q, quit
     }
 }
