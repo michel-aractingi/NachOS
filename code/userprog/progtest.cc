@@ -116,7 +116,7 @@ ConsoleTest (char *in, char *out)
 	      return;		// if q, quit
       }
 }
-//#ifdef CHANGED
+#ifdef CHANGED
 void   SynchConsoleTest (char *in, char *out)
 {
 	char ch;
@@ -129,4 +129,4 @@ void   SynchConsoleTest (char *in, char *out)
 	synchconsole->SynchPutString(synchconsole ,ch);*/
 fprintf(stderr, "Solaris: EOF detected in SynchConsole!\n");
 }
-//#endif// CHANGED
+#endif// CHANGED
