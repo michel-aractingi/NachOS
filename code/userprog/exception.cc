@@ -64,6 +64,7 @@ UpdatePC ()
 //      are in machine.h.
 //----------------------------------------------------------------------
 
+#ifndef CHANGED
 void
 ExceptionHandler (ExceptionType which)
 {
@@ -84,3 +85,34 @@ ExceptionHandler (ExceptionType which)
     UpdatePC ();
     // End of addition
 }
+#else
+
+void
+ExceptionHandler(ExceptionType which)
+{
+  int type = machine->ReadRegister(2);
+  if (which == SyscallException) {
+    switch (type) {
+    case SC_Halt: {
+      DEBUG('a', "Shutdown, initiated by user program.\n");
+      interrupt->Halt();
+      break;
+    }
+
+    case SC_PutChar: {
+      DEBUG('a', "PutChar exception.\n");
+      break;
+    }
+
+    default: {
+      printf("Unexpected user mode exception %d %d\n", which, type);
+      ASSERT(FALSE);
+    }
+
+    }
+  }
+ 
+  UpdatePC();
+}
+
+#endif
