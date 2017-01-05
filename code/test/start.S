@@ -51,6 +51,22 @@ Halt:
 
 	.globl Exit
 	.ent	Exit
+PutChar:
+	addiu $2,$0,SC_PutChar
+	syscall
+	j	$31
+	.end PutChar
+
+	.globl GetChar
+	.ent	GetChar
+GetChar:
+	addiu $2,$0,SC_GetChar
+	syscall
+	j	$31
+	.end GetChar
+
+	.globl GetString
+	.ent	GetString
 Exit:
 	addiu $2,$0,SC_Exit
 	syscall
