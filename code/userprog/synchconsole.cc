@@ -41,14 +41,14 @@ char SynchConsole::SynchGetChar()
   return ch;
 }
 
-void SynchConsole::SynchPutString(/*SynchConsole *self , */const char s[] )
-{/*
-   int i = 0;
-   while(s[i] != '\0')
-	{
-	self->SynchPutChar(s[i]);
-	i++;
-	}*/
+void SynchConsole::SynchPutString(const char s[] )
+{	
+  int i = 0 ;
+  for(i = 0 ; i< MAX_STRING_SIZE ; i++)
+    {
+    if(s[i] == '\0') break;
+    synchconsole->SynchPutChar(s[i]);
+    }
 }
 void SynchConsole::SynchGetString(/*SynchConsole *self,*/ char *s, int n)
 {

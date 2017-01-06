@@ -63,7 +63,19 @@ UpdatePC ()
 //      "which" is the kind of exception.  The list of possible exceptions 
 //      are in machine.h.
 //----------------------------------------------------------------------
+void
+copyStringFromMachine ( int from , char *to  , int size){
+     int i;
+     int ch;
+	for(i=0;i<size;i++)
+	{
+		machine->ReadMem(from + i, 1 , &ch);
+		to[i] = (char) ch;
+	}
 
+to[i] = '\0';
+
+}
 #ifndef CHANGED
 void
 ExceptionHandler (ExceptionType which)
@@ -90,6 +102,8 @@ ExceptionHandler (ExceptionType which)
 void
 ExceptionHandler(ExceptionType which)
 {
+  char *buff;
+  buff = NULL;
   int type = machine->ReadRegister(2);
   if (which == SyscallException) {
     switch (type) {
@@ -104,6 +118,13 @@ ExceptionHandler(ExceptionType which)
       synchconsole->SynchPutChar(machine->ReadRegister(4));
       break;
     }
+    case SC_PutString: {
+      DEBUG('a', "PutString exception.\n");
+      copyStringFromMachine(machine->ReadRegister(4),buff,MAX_STRING_SIZE);
+      synchconsole->SynchPutString(buff);
+      break;
+    }
+
 
     default: {
       printf("Unexpected user mode exception %d %d\n", which, type);
