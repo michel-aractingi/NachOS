@@ -190,6 +190,7 @@ Cleanup ()
 
 #ifdef USER_PROGRAM
     delete machine;
+    delete synchconsole;
 #endif
 
 #ifdef FILESYS_NEEDED
