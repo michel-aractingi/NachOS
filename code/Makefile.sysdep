@@ -36,8 +36,8 @@ MIPS_CC=$(firstword $(wildcard \
 MIPS_CPPFLAGS += -nostdinc
 # generate MIPS1 instructions only, use plain function calls, and do not use
 # small data/bss sections
-MIPS_CFLAGS += -mips1 -mno-abicalls -G 0 -fno-builtin -mfp32
-MIPS_ASFLAGS += -mips1 -mno-abicalls -G 0 -mfp32
+MIPS_CFLAGS += -mips1 -mno-abicalls --no-pie -G 0 -fno-builtin -mfp32
+MIPS_ASFLAGS += -mips1 -mno-abicalls --no-pie -G 0 -mfp32
 # do not link with standard libraries (libc) when creating nachos user programs
 MIPS_LDFLAGS += -nostdlib
 # -lgcc will perhaps be required with a recent gcc (not on small provided
