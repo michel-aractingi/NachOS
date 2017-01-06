@@ -3,7 +3,7 @@
 DEFAULT_VERBOSITY=0
 export DEFAULT_VERBOSITY
 
-.PHONY: all clean depend print build build-origin origin check mips-progs bin
+.PHONY: all clean depend print build check mips-progs bin
 
 # By default, build the check target so that we check that initial
 # nachos code still compile
@@ -11,7 +11,7 @@ check:
 
 all: build
 
-build build-origin: bin
+build: bin
 	$(MAKE) -C $@
 
 .PHONY: bin
@@ -21,27 +21,11 @@ bin:
 mips-progs:
 	$(MAKE) -C build $@
 
-check: origin build
-
-origin: bin
-	@set -e; RET= ;\
-	$(MAKE) -C build-origin || RET="1" ;\
-	if [ -n "$$RET" ]; then \
-		echo "=========================================================================" ;\
-		echo "=========================================================================" ;\
-		echo "=========================================================================" ;\
-		echo "Initial compilation of nachos does not work in the following directory:"   ;\
-		echo "build-origin" ;\
-		echo "Did you forget to protect your modifications with '#ifdef CHANGED'?" ;\
-		echo "=========================================================================" ;\
-		echo "=========================================================================" ;\
-		echo "=========================================================================" ;\
-		exit 1;\
-	fi
+check: build
 
 clean:
 	@set -e; \
-	for i in build build-origin bin; do \
+	for i in build bin; do \
 		$(MAKE) -C $$i $@; \
 	done
 
