@@ -11,6 +11,7 @@
 // This defines *all* of the global data structures used by Nachos.
 // These are all initialized and de-allocated by this file.
 
+
 Thread *currentThread;		// the thread we are running now
 Thread *threadToBeDestroyed;	// the thread that just finished
 Scheduler *scheduler;		// the ready list
@@ -29,6 +30,7 @@ SynchDisk *synchDisk;
 
 #ifdef USER_PROGRAM		// requires either FILESYS or FILESYS_STUB
 Machine *machine;		// user program memory and registers
+SynchConsole *synchconsole;
 #endif
 
 #ifdef NETWORK
@@ -151,12 +153,14 @@ Initialize (int argc, char **argv)
     // object to save its state. 
     currentThread = new Thread ("main");
     currentThread->setStatus (RUNNING);
+    
 
     interrupt->Enable ();
     CallOnUserAbort (Cleanup);	// if user hits ctl-C
 
 #ifdef USER_PROGRAM
     machine = new Machine (debugUserProg);	// this must come first
+    synchconsole = new SynchConsole(NULL,NULL); 
 #endif
 
 #ifdef FILESYS

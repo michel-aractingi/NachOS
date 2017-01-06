@@ -101,6 +101,7 @@ ExceptionHandler(ExceptionType which)
 
     case SC_PutChar: {
       DEBUG('a', "PutChar exception.\n");
+      synchconsole->SynchPutChar(machine->ReadRegister(4));
       break;
     }
 
