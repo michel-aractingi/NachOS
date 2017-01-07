@@ -50,12 +50,14 @@ void SynchConsole::SynchPutString(const char s[] )
     synchconsole->SynchPutChar(s[i]);
     }
 }
-void SynchConsole::SynchGetString(/*SynchConsole *self,*/ char *s, int n)
+void SynchConsole::SynchGetString(char *s, int n)
 {
-   /*int i = 0;
-   for( i = 0 ; i< n ; i++)
+   int i = 0;
+   for( i = 0 ; i< n-1 ; i++)
 	{
-	s[i] = self->SynchGetChar();
-	}	*/
+	s[i] = synchconsole->SynchGetChar();
+	if(s[i] == '\n' || s[i] == EOF ) {i++; break;}
+	}
+   s[i] = '\0';	
 }
 #endif // CHANGED

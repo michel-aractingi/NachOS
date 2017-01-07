@@ -78,6 +78,14 @@ copyStringFromMachine ( int from , char *to  , int size){
 to[i] = '\0';
 
 }
+void
+copyStringToMachine ( int addr , char *from , int size){
+	int i;
+	for( i = 0; i< size ; i++){
+		if (from[i] == '\0') break;
+		machine->WriteMem(addr + i ,1,from[i]);
+}
+}
 #ifndef CHANGED
 void
 ExceptionHandler (ExceptionType which)
@@ -126,8 +134,22 @@ ExceptionHandler(ExceptionType which)
       synchconsole->SynchPutString(buff);// fprintf(stdout,"out of put\n");
       break;
     }
-
-
+    case SC_Exit: {
+      DEBUG('a', "Exit thread, process terminated\n");
+      Exit(machine->ReadRegister(4));
+      break;
+    }
+    case SC_GetChar: {
+      DEBUG('a', "GetChar exception.\n");
+      machine->WriteRegister(2,(int)synchconsole->SynchGetChar());
+      break;
+    }
+    case SC_GetString: {
+      DEBUG('a', "GetString exception.\n");
+      synchconsole->SynchGetString(buff,MAX_STRING_SIZE);
+      copyStringToMachine (machine->ReadRegister(4),buff,MAX_STRING_SIZE);
+      break;
+    }
     default: {
       printf("Unexpected user mode exception %d %d\n", which, type);
       ASSERT(FALSE);
