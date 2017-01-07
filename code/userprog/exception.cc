@@ -69,7 +69,9 @@ copyStringFromMachine ( int from , char *to  , int size){
      int ch;
 	for(i=0;i<size;i++)
 	{
+		
 		machine->ReadMem(from + i, 1 , &ch);
+//		fprintf(stdout,"one\n");
 		to[i] = (char) ch;
 	}
 
@@ -102,8 +104,8 @@ ExceptionHandler (ExceptionType which)
 void
 ExceptionHandler(ExceptionType which)
 {
-  char *buff;
-  buff = NULL;
+  char buff[MAX_STRING_SIZE];
+  //buff = NULL;
   int type = machine->ReadRegister(2);
   if (which == SyscallException) {
     switch (type) {
@@ -121,7 +123,7 @@ ExceptionHandler(ExceptionType which)
     case SC_PutString: {
       DEBUG('a', "PutString exception.\n");
       copyStringFromMachine(machine->ReadRegister(4),buff,MAX_STRING_SIZE);
-      synchconsole->SynchPutString(buff);
+      synchconsole->SynchPutString(buff);// fprintf(stdout,"out of put\n");
       break;
     }
 
