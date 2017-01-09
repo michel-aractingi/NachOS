@@ -120,8 +120,8 @@ ExceptionHandler(ExceptionType which)
     switch (type) {
     case SC_Halt: {
       DEBUG('a', "Shutdown, initiated by user program.\n");
-      //while (numOfThreads != 0) { }
-      interrupt->Halt();
+      if (numOfThreads == 0)
+        interrupt->Halt();
       break;
     }
 
@@ -138,7 +138,8 @@ ExceptionHandler(ExceptionType which)
     }
     case SC_Exit: {
       DEBUG('a', "Exit thread, process terminated\n");
-      Exit(machine->ReadRegister(4));
+      if (numOfThreads == 0)
+        Exit(machine->ReadRegister(4));
       break;
     }
     case SC_GetChar: {
