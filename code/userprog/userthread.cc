@@ -47,6 +47,7 @@ void StartUserThread(int f) {
 
   // TODO: add different spaces for different threads
   //machine->WriteRegister(StackReg, 0);
+  machine->WriteRegister(StackReg, machine->ReadRegister(StackReg) - 2*PageSize);
 
   machine->Run();
 }

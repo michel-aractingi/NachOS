@@ -108,6 +108,10 @@ class Thread
     {
 	return (name);
     }
+    const int *getStackTop ()
+    {
+    return (stackTop);
+    }
     void Print ()
     {
 	printf ("%s, ", name);

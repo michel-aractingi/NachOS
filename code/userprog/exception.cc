@@ -137,7 +137,8 @@ ExceptionHandler(ExceptionType which)
       break;
     }
     case SC_Exit: {
-      DEBUG('a', "Exit thread, process terminated\n");
+      DEBUG('a', "Exit process terminated\n");
+      // TODO: check threads ONLY within process address space
       if (numOfThreads == 0)
         Exit(machine->ReadRegister(4));
       break;
