@@ -150,6 +150,14 @@ ExceptionHandler(ExceptionType which)
       copyStringToMachine (machine->ReadRegister(4),buff,MAX_STRING_SIZE);
       break;
     }
+    case SC_UserThreadCreate: {
+      DEBUG('a', "UserThreadCreate exception.\n");
+      break;
+    }
+    case SC_UserThreadExit: {
+      DEBUG('a', "UserThreadCreate exception.\n");
+      break;
+    }
     default: {
       printf("Unexpected user mode exception %d %d\n", which, type);
       ASSERT(FALSE);

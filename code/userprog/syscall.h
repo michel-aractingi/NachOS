@@ -141,7 +141,7 @@ char GetChar();
 void PutString (char *ch);
 void GetString (char *ch);
 
-int  UserThreadCreate (VoidFunctionPtr func , int *arg);
+int  UserThreadCreate (void func (void *arg), void *arg);
 void UserThreadExit();
 
 #endif // IN_USER_MODE
