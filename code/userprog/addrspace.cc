@@ -19,6 +19,7 @@
 #include "system.h"
 #include "addrspace.h"
 #include "noff.h"
+#include "synch.h"
 
 #include <strings.h>		/* for bzero */
 
@@ -45,6 +46,8 @@ SwapHeader (NoffHeader * noffH)
     noffH->uninitData.inFileAddr = WordToHost (noffH->uninitData.inFileAddr);
 }
 
+static Semaphore *threadsLock;
+
 //----------------------------------------------------------------------
 // AddrSpace::AddrSpace
 //      Create an address space to run a user program.
@@ -64,6 +67,8 @@ AddrSpace::AddrSpace (OpenFile * executable)
 {
     NoffHeader noffH;
     unsigned int i, size;
+
+    threadsLock = new Semaphore("lock threads", 1);
 
     executable->ReadAt ((char *) &noffH, sizeof (noffH), 0);
     if ((noffH.noffMagic != NOFFMAGIC) &&
@@ -194,4 +199,20 @@ AddrSpace::RestoreState ()
 {
     machine->pageTable = pageTable;
     machine->pageTableSize = numPages;
+}
+
+void AddrSpace::AddThread() {
+  threadsLock->P();
+  numOfThreads++;
+  threadsLock->V();
+}
+
+void AddrSpace::ExitThread() {
+  threadsLock->P();
+  numOfThreads--;
+  threadsLock->V();
+}
+
+int AddrSpace::GetNumOfThreads() {
+  return numOfThreads;
 }

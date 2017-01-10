@@ -9,7 +9,6 @@
 #include "syscall.h"
 
 int do_UserThreadCreate(int f, int arg) {
-  numOfThreads++;
   fprintf(stdout, "creating!!!!!!!!!!!!!!!!!!!!!\n");
   ThreadUser* threadUser = new ThreadUser;
   threadUser->f = f;
@@ -17,6 +16,10 @@ int do_UserThreadCreate(int f, int arg) {
 
   Thread* newThread = new Thread("user_thread");
   newThread->space = currentThread->space;
+
+  currentThread->space->AddThread();
+
+  fprintf(stdout, "nuuuuuuuuuuuuuuuum%d\n", currentThread->space->GetNumOfThreads());
 
   newThread->Fork(StartUserThread, (int)threadUser);
   fprintf(stdout, "created!!!!!!!!!!!!!!!!!!!!! %d\n", numOfThreads);
@@ -26,7 +29,7 @@ int do_UserThreadCreate(int f, int arg) {
 int do_UserThreadExit() {
   //PutChar('o');
   // add space clean
-  numOfThreads--;
+  currentThread->space->ExitThread();
   fprintf(stdout, "decreeee!!!!!!!!!!!!!!!!!!!!! %d\n", numOfThreads);
   currentThread->Finish();
   

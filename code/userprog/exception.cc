@@ -120,7 +120,7 @@ ExceptionHandler(ExceptionType which)
     switch (type) {
     case SC_Halt: {
       DEBUG('a', "Shutdown, initiated by user program.\n");
-      if (numOfThreads == 0)
+      if (currentThread->space->GetNumOfThreads() == 0)
         interrupt->Halt();
       break;
     }
@@ -139,7 +139,7 @@ ExceptionHandler(ExceptionType which)
     case SC_Exit: {
       DEBUG('a', "Exit process terminated\n");
       // TODO: check threads ONLY within process address space
-      if (numOfThreads == 0)
+      if (currentThread->space->GetNumOfThreads() == 0)
         Exit(machine->ReadRegister(4));
       break;
     }
