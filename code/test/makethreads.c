@@ -1,9 +1,9 @@
 #include "syscall.h"
 //#include ".h"
 
-void incr(void* i) {
-  PutString("\nincr\n");
-  PutString((char*)(i));
+void incr(void *i) {
+  *((int *)i)+=1;
+  if(*((int *)i) == 4){ PutChar('s');}
   UserThreadExit();
 }
 
@@ -17,5 +17,6 @@ int main() {
 	PutChar('d');
   UserThreadCreate(incr, (void*)3);
   UserThreadCreate(incr, (void*)5);
+  UserThreadCreate(incr, (void*)7);
   return 0 ;
 }
