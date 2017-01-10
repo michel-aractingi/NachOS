@@ -1,9 +1,29 @@
 #include "syscall.h"
 //#include ".h"
 
+void incr2(void *i) {
+
+    PutString("Starting2\n");
+
+    for(int f=0; f<25;f++) {
+        if(f == 0){
+
+        }
+    }
+    PutString("Exiting2\n");
+    UserThreadExit();
+}
+
 void incr(void *i) {
-  *((int *)i)+=1;
-  if(*((int *)i) == 4){ PutChar('s');}
+
+    PutString("Starting\n");
+
+  for(int f=0; f<25500;f++) {
+        if(f == 0){
+            UserThreadCreate(incr2, i);
+        }
+  }
+    PutString("Exiting\n");
   UserThreadExit();
 }
 
@@ -14,8 +34,9 @@ void sum(int i, int j) {
 
 int main() {
 	//fprintf(stdout, "ok!!!!!!!!!!!!!!!!!!!!!\n");
-	PutChar('d');
   UserThreadCreate(incr, (void*)3);
+    for(int f=0; f<2550000;f++) {
+    }
   UserThreadCreate(incr, (void*)5);
   UserThreadCreate(incr, (void*)7);
   return 0 ;
