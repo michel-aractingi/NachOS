@@ -5,7 +5,7 @@
 #include "system.h"
 #include "syscall.h"
 
-extern int numOfThreads;
+
 
 typedef struct {
         int f;

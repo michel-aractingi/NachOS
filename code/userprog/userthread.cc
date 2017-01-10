@@ -24,7 +24,7 @@ int do_UserThreadCreate(int f, int arg) {
   fprintf(stdout, "nuuuuuuuuuuuuuuuum%d\n", currentThread->space->GetNumOfThreads());
 
   newThread->Fork(StartUserThread, (int)threadUser);
-  fprintf(stdout, "created!!!!!!!!!!!!!!!!!!!!! %d\n", numOfThreads);
+  fprintf(stdout, "created!!!!!!!!!!!!!!!!!!!!! \n");
   return 0;
 }
 
@@ -32,7 +32,7 @@ int do_UserThreadExit() {
   //PutChar('o');
   // aidd space clean
   currentThread->space->ExitThread();
-  fprintf(stdout, "decreeee!!!!!!!!!!!!!!!!!!!!! %d\n", numOfThreads);
+  fprintf(stdout, "decreeee!!!!!!!!!!!!!!!!!!!!! \n");
   currentThread->space->bitmap->Clear(currentThread->numberOfThread);
   currentThread->Finish();
   
@@ -41,7 +41,7 @@ int do_UserThreadExit() {
 }
 
 void StartUserThread(int f) {
-  fprintf(stdout, "start user th!!!!!!!!!!!!!!!!!!!!!%d\n", numOfThreads);
+  fprintf(stdout, "start user th!!!!!!!!!!!!!!!!!!!!!\n");
   ThreadUser* threadUser = (ThreadUser*)f;
   currentThread->space->InitRegisters();
   currentThread->space->RestoreState();
