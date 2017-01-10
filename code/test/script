@@ -1,4 +1,3 @@
-OUTPUT_FORMAT("ecoff-littlemips")
 ENTRY(__start)
 SECTIONS
 {
