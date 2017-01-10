@@ -19,6 +19,7 @@
 #include "bitmap.h"
 
 #define UserStackSize		1024	// increase this as necessary!
+#define NumberOfThreads     5
 
 class AddrSpace
 {

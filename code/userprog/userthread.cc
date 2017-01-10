@@ -19,8 +19,8 @@ int do_UserThreadCreate(int f, int arg) {
   newThread->space = currentThread->space;
 
   currentThread->space->AddThread();
-  threadUser->free_addr = currentThread->space->bitmap->Find();
-  if(threadUser->free_addr == -1) return -1;
+  currentThread->numberOfThread = currentThread->space->bitmap->Find();
+  if(currentThread->numberOfThread == -1) return -1;
   fprintf(stdout, "nuuuuuuuuuuuuuuuum%d\n", currentThread->space->GetNumOfThreads());
 
   newThread->Fork(StartUserThread, (int)threadUser);
@@ -33,7 +33,7 @@ int do_UserThreadExit() {
   // aidd space clean
   currentThread->space->ExitThread();
   fprintf(stdout, "decreeee!!!!!!!!!!!!!!!!!!!!! %d\n", numOfThreads);
-  currentThread->space->bitmap->Clear(*(currentThread->getStackTop())/ PageSize);
+  currentThread->space->bitmap->Clear(currentThread->numberOfThread);
   currentThread->Finish();
   
 
@@ -54,7 +54,7 @@ void StartUserThread(int f) {
 
   // TODO: add different spaces for different threads
   //machine->WriteRegister(StackReg, 0);
-  machine->WriteRegister(StackReg, machine->ReadRegister(StackReg) - 2*PageSize -threadUser->free_addr*PageSize);
+  machine->WriteRegister(StackReg, machine->ReadRegister(StackReg) - 2*PageSize - currentThread->numberOfThread*PageSize);
 
   machine->Run();
 }

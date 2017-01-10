@@ -88,7 +88,7 @@ class Thread
     // NOTE -- thread being deleted
     // must not be running when delete 
     // is called
-
+    int numberOfThread;
     // basic thread operations
 
     void Fork (VoidFunctionPtr func, int arg);	// Make thread run (*func)(arg)

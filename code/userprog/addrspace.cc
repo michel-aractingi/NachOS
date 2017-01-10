@@ -104,8 +104,7 @@ AddrSpace::AddrSpace (OpenFile * executable)
 	  // pages to be read-only
       }
 
-   //` bitmap = new BitMap(numPages);
-       bitmap  = new BitMap(10);
+       bitmap  = new BitMap(UserStackSize/NumberOfThreads);
 // zero out the entire address space, to zero the unitialized data segment 
 // and the stack segment
     bzero (machine->mainMemory, size);
