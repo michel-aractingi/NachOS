@@ -69,6 +69,7 @@ AddrSpace::AddrSpace (OpenFile * executable)
     unsigned int i, size;
 
     threadsLock = new Semaphore("lock threads", 1);
+    
 
     executable->ReadAt ((char *) &noffH, sizeof (noffH), 0);
     if ((noffH.noffMagic != NOFFMAGIC) &&
@@ -86,7 +87,7 @@ AddrSpace::AddrSpace (OpenFile * executable)
     // to run anything too big --
     // at least until we have
     // virtual memory
-
+    
     DEBUG ('a', "Initializing address space, num pages %d, size %d\n",
 	   numPages, size);
 // first, set up the translation 
@@ -103,6 +104,8 @@ AddrSpace::AddrSpace (OpenFile * executable)
 	  // pages to be read-only
       }
 
+   //` bitmap = new BitMap(numPages);
+       bitmap  = new BitMap(10);
 // zero out the entire address space, to zero the unitialized data segment 
 // and the stack segment
     bzero (machine->mainMemory, size);
@@ -124,6 +127,7 @@ AddrSpace::AddrSpace (OpenFile * executable)
 			       [noffH.initData.virtualAddr]),
 			      noffH.initData.size, noffH.initData.inFileAddr);
       }
+
 
 }
 

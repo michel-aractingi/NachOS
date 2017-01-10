@@ -10,6 +10,7 @@ extern int numOfThreads;
 typedef struct {
         int f;
         int arg;
+	int free_addr;
 } ThreadUser;
 
 

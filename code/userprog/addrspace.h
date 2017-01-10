@@ -16,6 +16,7 @@
 #include "copyright.h"
 #include "filesys.h"
 // #include "synch.h"
+#include "bitmap.h"
 
 #define UserStackSize		1024	// increase this as necessary!
 
@@ -37,12 +38,15 @@ class AddrSpace
     void ExitThread();
     int GetNumOfThreads();
 
+    BitMap *bitmap;
   private:
       TranslationEntry * pageTable;	// Assume linear page table translation
     // for now!
     unsigned int numPages;	// Number of pages in the virtual 
     // address space
     unsigned int numOfThreads;  // number of threads within this address space
+    
+
 };
 
 #endif // ADDRSPACE_H

@@ -9,6 +9,7 @@
 #include "syscall.h"
 
 int do_UserThreadCreate(int f, int arg) {
+
   fprintf(stdout, "creating!!!!!!!!!!!!!!!!!!!!!\n");
   ThreadUser* threadUser = new ThreadUser;
   threadUser->f = f;
@@ -18,7 +19,8 @@ int do_UserThreadCreate(int f, int arg) {
   newThread->space = currentThread->space;
 
   currentThread->space->AddThread();
-
+  threadUser->free_addr = currentThread->space->bitmap->Find();
+  if(threadUser->free_addr == -1) return -1;
   fprintf(stdout, "nuuuuuuuuuuuuuuuum%d\n", currentThread->space->GetNumOfThreads());
 
   newThread->Fork(StartUserThread, (int)threadUser);
@@ -28,11 +30,13 @@ int do_UserThreadCreate(int f, int arg) {
 
 int do_UserThreadExit() {
   //PutChar('o');
-  // add space clean
+  // aidd space clean
   currentThread->space->ExitThread();
   fprintf(stdout, "decreeee!!!!!!!!!!!!!!!!!!!!! %d\n", numOfThreads);
+  currentThread->space->bitmap->Clear(*(currentThread->getStackTop())/ PageSize);
   currentThread->Finish();
   
+
   return 0;
 }
 
@@ -50,7 +54,7 @@ void StartUserThread(int f) {
 
   // TODO: add different spaces for different threads
   //machine->WriteRegister(StackReg, 0);
-  machine->WriteRegister(StackReg, machine->ReadRegister(StackReg) - 2*PageSize);
+  machine->WriteRegister(StackReg, machine->ReadRegister(StackReg) - 2*PageSize -threadUser->free_addr*PageSize);
 
   machine->Run();
 }
