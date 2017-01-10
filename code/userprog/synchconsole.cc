@@ -8,7 +8,7 @@
 
 static Semaphore *readAvail;
 static Semaphore *writeDone;
-
+static Semaphore *sem_lock;
 static void ReadAviail(int arg) { readAvail->V(); }
 static void WriteDone(int arg) { writeDone->V(); }
 
@@ -17,6 +17,7 @@ SynchConsole::SynchConsole(char *readFile, char *writeFile)
 {
   readAvail = new Semaphore("read avail", 0);
   writeDone = new Semaphore("write done", 0);
+  sem_lock  = new Semaphore("Lock",1); 
   console   = new Console( readFile , writeFile , ReadAviail , WriteDone ,0);
 }
 
@@ -29,8 +30,10 @@ delete readAvail;
 
 void SynchConsole::SynchPutChar(const char ch)
 {
+  sem_lock->P();
   console->PutChar(ch);
   writeDone->P();
+  sem_lock->V();
 }
 
 char SynchConsole::SynchGetChar()
