@@ -69,4 +69,12 @@ void SynchConsole::SynchGetString(char *s, int n)
    s[i] = '\0';
    //sem_lock->V();
 }
+
+void SynchConsole::SynchPutInt(int value) {
+  char * buffer = new char[MAX_STRING_SIZE];
+  snprintf(buffer,MAX_STRING_SIZE, "%d", value);
+  synchconsole->SynchPutString(buffer);
+  delete [] buffer;
+}
+
 #endif // CHANGED

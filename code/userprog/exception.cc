@@ -154,6 +154,12 @@ ExceptionHandler(ExceptionType which)
       copyStringToMachine (machine->ReadRegister(4),buff,MAX_STRING_SIZE);
       break;
     }
+    case SC_PutInt: {
+          DEBUG('a', "PutInt Exception\n");
+          int value = machine->ReadRegister(4);
+          synchconsole->SynchPutInt(value);
+          break;
+    }
     case SC_UserThreadCreate: {
       DEBUG('a', "UserThreadCreate exception.\n");
       do_UserThreadCreate((int)machine->ReadRegister(4),

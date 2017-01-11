@@ -2,28 +2,30 @@
 //#include ".h"
 
 void incr2(void *i) {
-
-    PutString("Starting2\n");
+    PutInt(*((int *)i)+=1);
+    PutString("\tStartings\t");
 
     for(int f=0; f<25;f++) {
         if(f == 0){
 
         }
     }
-    PutString("Exiting2\n");
+    PutInt(*((int *)i)+=1);
+    PutString("\tExitings\n");
     UserThreadExit();
 }
 
 void incr(void *i) {
-
-    PutString("Starting\n");
+    PutInt(*((int *)i)+=1);
+    PutString("\tStarting");
 
   for(int f=0; f<25500;f++) {
         if(f == 0){
             UserThreadCreate(incr2, i);
         }
   }
-    PutString("Exiting\n");
+    PutInt(*((int *)i)+=1);
+    PutString("\tExiting\n");H
   UserThreadExit();
 }
 
