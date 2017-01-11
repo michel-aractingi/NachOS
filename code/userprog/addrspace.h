@@ -19,7 +19,7 @@
 #include "bitmap.h"
 
 #define UserStackSize		1024	// increase this as necessary!
-#define NumberOfThreads     5
+#define NumberOfThreads     8
 
 class AddrSpace
 {
@@ -38,6 +38,7 @@ class AddrSpace
     void AddThread();
     void ExitThread();
     int GetNumOfThreads();
+    int dothis();
 
     BitMap *bitmap;
   private:
@@ -46,7 +47,6 @@ class AddrSpace
     unsigned int numPages;	// Number of pages in the virtual 
     // address space
     unsigned int numOfThreads;  // number of threads within this address space
-    
 
 };
 
