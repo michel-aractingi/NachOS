@@ -15,6 +15,7 @@
 #include "interrupt.h"
 #include "stats.h"
 #include "timer.h"
+#include "frameprovider.h"
 
 //buffer size for copy string
 #define MAX_STRING_SIZE 10

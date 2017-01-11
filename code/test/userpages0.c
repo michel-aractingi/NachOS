@@ -17,7 +17,6 @@ void b(void *i) {
 }
 
 int main() {
-
   UserThreadCreate(a, (void*)5);
   UserThreadCreate(b, (void*)7);
   return 0 ;
