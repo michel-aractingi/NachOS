@@ -12,7 +12,6 @@ class FrameProvider {
         int GetEmptyFrame(int);
         void ReleaseFrame(int);
         int NumAvailFrames();
-
     private:
         BitMap* bitmap;
 };

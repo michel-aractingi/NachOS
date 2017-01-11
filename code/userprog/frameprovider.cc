@@ -2,7 +2,7 @@
 #include "system.h"
 
 FrameProvider::FrameProvider (int n) {
-    this->bitmap = new BitMap(n);
+    bitmap = new BitMap(n);
 }
 
 FrameProvider::~FrameProvider () {
@@ -10,5 +10,15 @@ FrameProvider::~FrameProvider () {
 }
 
 void FrameProvider::ReleaseFrame(int n) {
-    this->bitmap->Clear(n);
+    bitmap->Clear(n);
+}
+
+int FrameProvider::GetEmptyFrame(int n) {
+    int f = bitmap->Find();
+    bzero(&machine->mainMemory[f], PageSize);
+    return f;
+}
+
+int FrameProvider::NumAvailFrames() {
+    return bitmap->NumClear();
 }
