@@ -25,7 +25,7 @@ void incr(void *i) {
         }
   }
     PutInt(*((int *)i)+=1);
-    PutString("\tExiting\n");H
+    PutString("\tExiting\n");
   UserThreadExit();
 }
 
