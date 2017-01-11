@@ -153,7 +153,7 @@ $3: TARGET=MIPS
 $3: LDFLAGS+=-Wl,-T,$(topsrc_dir)/test/script -Wl,-N
 # LB: Caution! start.o should appear *before* $^ for the load!
 $3.coff: %.coff: $$(strip $$(call addprefix-dir,$$(call serie-get-PREFIX,$2),$$(call userprog-get-OFILES,$1))) $(topsrc_dir)/test/script
-	$$(lko1_V)$$(LINK.o) -static -Wl,-b,elf32-tradlittlemips $$(call addprefix-dir,$$(call serie-get-PREFIX,$2),start.o) \
+	$$(lko1_V)$$(LINK.o) -Wl,-b,elf32-tradlittlemips $$(call addprefix-dir,$$(call serie-get-PREFIX,$2),start.o) \
 		$$(filter-out %start.o,$$(filter %.o,$$^)) $$(LOADLIBES) $$(LDLIBS) -o $$@
 	$$(lko_V)$$(LINK.o) -Wl,-b,ecoff-littlemips $$(call addprefix-dir,$$(call serie-get-PREFIX,$2),start.o) \
 		$$(filter-out %start.o,$$(filter %.o,$$^)) $$(LOADLIBES) $$(LDLIBS) -o $$@
