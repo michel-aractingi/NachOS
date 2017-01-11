@@ -48,7 +48,7 @@ SwapHeader (NoffHeader * noffH)
 
 static Semaphore *threadsLock;
 
-void ReadAtVirtual(OpenFile *executable,
+static void ReadAtVirtual(OpenFile *executable,
                           int virtualaddr,
                           int numBytes,
                           int position,
@@ -72,8 +72,8 @@ void ReadAtVirtual(OpenFile *executable,
   machine->pageTable = prevPageTable;
   machine->pageTableSize = prevPageTableSize;
 
-  //delete buff;
 }
+
 //----------------------------------------------------------------------
 // AddrSpace::AddrSpace
 //      Create an address space to run a user program.
@@ -140,17 +140,27 @@ AddrSpace::AddrSpace (OpenFile * executable)
       {
 	  DEBUG ('a', "Initializing code segment, at 0x%x, size %d\n",
 		 noffH.code.virtualAddr, noffH.code.size);
-	  executable->ReadAt (&(machine->mainMemory[noffH.code.virtualAddr]),
-			      noffH.code.size, noffH.code.inFileAddr);
+     // executable->ReadAt (&(machine->mainMemory[noffH.code.virtualAddr]),
+     //                    noffH.code.size, noffH.code.inFileAddr);
+	   ReadAtVirtual(executable,
+                   noffH.code.virtualAddr,
+                   noffH.code.size,
+                   noffH.code.inFileAddr,
+                   pageTable,
+                   numPages);
       }
     if (noffH.initData.size > 0)
       {
 	  DEBUG ('a', "Initializing data segment, at 0x%x, size %d\n",
 		 noffH.initData.virtualAddr, noffH.initData.size);
-	  executable->ReadAt (&
-			      (machine->mainMemory
-			       [noffH.initData.virtualAddr]),
-			      noffH.initData.size, noffH.initData.inFileAddr);
+     // executable->ReadAt (&(machine->mainMemory[noffH.code.virtualAddr]),
+     //                    noffH.code.size, noffH.code.inFileAddr);
+	   ReadAtVirtual(executable,
+                   noffH.code.virtualAddr,
+                   noffH.code.size,
+                   noffH.code.inFileAddr,
+                   pageTable,
+                   numPages);
       }
 
 
