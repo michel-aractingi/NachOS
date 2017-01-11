@@ -43,6 +43,8 @@ NACHOS_MIPS_FLAGS += -mno-abicalls
 NACHOS_MIPS_FLAGS += --no-pie -no-pie
 # do not expect to be linked with the gcc library
 NACHOS_MIPS_FLAGS += -fno-builtin
+# disable stack protection where enabled by default (else some symbols will be missing)
+NACHOS_MIPS_FLAGS += -fno-stack-protector
 # do not use small data/bss sections
 NACHOS_MIPS_FLAGS += -G 0
 ###############################################
