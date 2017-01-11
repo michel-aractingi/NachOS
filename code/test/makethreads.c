@@ -4,8 +4,8 @@
 void incr2(void *i) {
     PutInt(*((int *)i)+=1);
     PutString("\tStartings\t");
-
-    for(int f=0; f<25;f++) {
+    int f;
+    for(f=0; f<25;f++) {
         if(f == 0){
 
         }
@@ -18,8 +18,8 @@ void incr2(void *i) {
 void incr(void *i) {
     PutInt(*((int *)i)+=1);
     PutString("\tStarting");
-
-  for(int f=0; f<25500;f++) {
+   int f;
+  for(f=0; f<25500;f++) {
         if(f == 0){
             UserThreadCreate(incr2, i);
         }
@@ -37,7 +37,8 @@ void sum(int i, int j) {
 int main() {
 	//fprintf(stdout, "ok!!!!!!!!!!!!!!!!!!!!!\n");
   UserThreadCreate(incr, (void*)3);
-    for(int f=0; f<2550000;f++) {
+  int f;
+    for(f=0; f<2550000;f++) {
     }
   UserThreadCreate(incr, (void*)5);
   UserThreadCreate(incr, (void*)7);
