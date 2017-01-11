@@ -48,6 +48,32 @@ SwapHeader (NoffHeader * noffH)
 
 static Semaphore *threadsLock;
 
+void ReadAtVirtual(OpenFile *executable,
+                          int virtualaddr,
+                          int numBytes,
+                          int position,
+                          TranslationEntry *pageTable,
+                          unsigned numPages) {
+  char buff[numBytes];
+
+  TranslationEntry *prevPageTable = machine->pageTable;
+  unsigned int prevPageTableSize = machine->pageTableSize;
+
+  executable->ReadAt(buff, numBytes, position);
+
+  machine->pageTable = pageTable;
+  machine->pageTableSize = numPages;
+
+  int i;
+  for (i = 0; i < numBytes; i++) {
+    machine->WriteMem(virtualaddr + i, 1, buff[i]);
+  }
+
+  machine->pageTable = prevPageTable;
+  machine->pageTableSize = prevPageTableSize;
+
+  //delete buff;
+}
 //----------------------------------------------------------------------
 // AddrSpace::AddrSpace
 //      Create an address space to run a user program.
