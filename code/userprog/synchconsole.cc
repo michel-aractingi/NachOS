@@ -18,8 +18,8 @@ SynchConsole::SynchConsole(char *readFile, char *writeFile)
 {
   readAvail = new Semaphore("read avail", 0);
   writeDone = new Semaphore("write done", 0);
-  sem_lock  = new Semaphore("Lock",1);
-  char_lock  = new Semaphore("Lock",1);
+  sem_lock  = new Semaphore("Lock on String",1);
+  char_lock  = new Semaphore("Lock on Char",1);
   console   = new Console( readFile , writeFile , ReadAviail , WriteDone ,0);
 }
 
@@ -33,9 +33,12 @@ delete readAvail;
 void SynchConsole::SynchPutChar(const char ch)
 {
   char_lock->P();
+//  fprintf(stdout,"lock acquired\n");
   console->PutChar(ch);
   writeDone->P();
   char_lock->V();
+//  fprintf(stdout,"lock released\n");
+
 }
 
 char SynchConsole::SynchGetChar()
@@ -55,7 +58,9 @@ void SynchConsole::SynchPutString(const char s[] )
     if(s[i] == '\0') break;
     synchconsole->SynchPutChar(s[i]);
     }
+    fprintf(stdout,"buffer %s with s[0] %d\n",s,s[0]);
     sem_lock->V();
+    
 }
 void SynchConsole::SynchGetString(char *s, int n)
 {

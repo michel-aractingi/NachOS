@@ -74,12 +74,20 @@ UserThreadCreate:
 	.end UserThreadCreate
 
         .globl UserThreadExit
-	.ent UserThreadExit
+	.ent 	UserThreadExit
 UserThreadExit:
 	addiu $2, $0, SC_UserThreadExit
 	syscall
 	j $31
 	.end UserThreadExit
+
+        .globl UserThreadJoin
+        .ent 	UserThreadJoin
+UserThreadJoin:
+        addiu $2, $0, SC_UserThreadJoin
+        syscall
+        j $31
+        .end UserThreadJoin
 
 	.globl GetString
 	.ent	GetString
@@ -98,7 +106,7 @@ PutString:
 	.end PutString
 
 	.globl PutInt
-	.ent PutInt
+	.ent 	PutInt
 PutInt:
 		addiu $2,$0,SC_PutInt
 		syscall

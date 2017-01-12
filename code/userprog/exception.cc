@@ -71,9 +71,9 @@ copyStringFromMachine ( int from , char *to  , int size){
 	for(i=0;i<size;i++)
 	{
 		
-		machine->ReadMem(from + i, 1 , &ch);
-//		fprintf(stdout,"one\n");
+		if(!machine->ReadMem(from + i*4, 1 , &ch)){fprintf(stdout,"error");}
 		to[i] = (char) ch;
+		fprintf(stdout,"%d\n",ch);
 	}
 
 to[i] = '\0';
@@ -132,7 +132,8 @@ ExceptionHandler(ExceptionType which)
     }
     case SC_PutString: {
       DEBUG('a', "PutString exception.\n");
-      copyStringFromMachine(machine->ReadRegister(4),buff,MAX_STRING_SIZE);
+	fprintf(stdout,"R4 %d\n",(char)machine->ReadRegister(2));
+      copyStringFromMachine(machine->ReadRegister(4),buff,MAX_STRING_SIZE);fprintf(stdout,"buffer %s\n",buff);
       synchconsole->SynchPutString(buff);// fprintf(stdout,"out of put\n");
       break;
     }
@@ -162,13 +163,19 @@ ExceptionHandler(ExceptionType which)
     }
     case SC_UserThreadCreate: {
       DEBUG('a', "UserThreadCreate exception.\n");
-      do_UserThreadCreate((int)machine->ReadRegister(4),
-                           (int)machine->ReadRegister(5));
+      do_UserThreadCreate(machine->ReadRegister(4),
+                           machine->ReadRegister(5));
       break;
     }
     case SC_UserThreadExit: {
       DEBUG('a', "UserThreadCreate exception.\n");
       do_UserThreadExit();
+      break;
+    }
+    case SC_UserThreadJoin: {
+      DEBUG('a', "UserThreadJoin exception.\n");
+    //  fprintf(stdout,"r4 %d\n",machine->ReadRegister(4));
+      do_UserThreadJoin(machine->ReadRegister(4));
       break;
     }
     default: {

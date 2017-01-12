@@ -33,9 +33,10 @@
 #define SC_PutString 	12
 #define SC_GetChar	13
 #define SC_GetString	14
-#define SC_UserThreadCreate 15
-#define SC_UserThreadExit   16
-#define SC_PutInt 17
+#define SC_PutInt       15
+#define SC_UserThreadCreate 16
+#define SC_UserThreadExit   17
+#define SC_UserThreadJoin   18
 
 #ifdef IN_USER_MODE
 
@@ -144,7 +145,7 @@ void GetString (char *ch);
 void PutInt(int n);
 int  UserThreadCreate (void func (void *arg), void *arg);
 void UserThreadExit();
-
+void UserThreadJoin(int ThreadNum);
 #endif // IN_USER_MODE
 
 #endif /* SYSCALL_H */

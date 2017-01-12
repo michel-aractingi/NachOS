@@ -2,7 +2,7 @@
 
 void a(void *i) {
     int f;
-    for(f=0; f<3;f++) {
+    for(f=0; f<5;f++) {
       PutChar('a');
     }
     UserThreadExit();
@@ -10,7 +10,7 @@ void a(void *i) {
 
 void b(void *i) {
     int g;
-    for(g=0; g<3;g++) {
+    for(g=0; g<10;g++) {
       PutChar('b');
     }
     UserThreadExit();

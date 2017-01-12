@@ -18,25 +18,21 @@ int do_UserThreadCreate(int f, int arg) {
   threadUser->arg = arg;
 
   Thread* newThread = new Thread("user_thread");
-    Semaphore *bit_lock = new Semaphore("Bit Lock Semaphore", 1);
-    bit_lock->P();
+
+  Semaphore *bit_lock = new Semaphore("Bit Lock Semaphore", 1);
   newThread->space = currentThread->space;
+  bit_lock->P();
   newThread->space->AddThread();
   newThread->numberOfThread = newThread->space->bitmap->Find();
-    bit_lock->V();
+  bit_lock->V();
   if(newThread->numberOfThread == -1) return -1;
-  //fprintf(stdout, "nuuuuuuuuuuuuuuuum%d\n", currentThread->space->GetNumOfThreads());
-
   newThread->Fork(StartUserThread, (int)threadUser);
-  //fprintf(stdout, "created!!!!!!!!!!!!!!!!!!!!! \n");
   return 0;
 }
 
 int do_UserThreadExit() {
-  //PutChar('o');
-  // aidd space clean
   currentThread->space->ExitThread();
-  //fprintf(stdout, "decreeee!!!!!!!!!!!!!!!!!!!!! \n");
+  fprintf(stdout, "Thread %d exited \n",currentThread->numberOfThread);
   currentThread->space->bitmap->Clear(currentThread->numberOfThread);
   currentThread->Finish();
   
@@ -45,21 +41,30 @@ int do_UserThreadExit() {
 }
 
 void StartUserThread(int f) {
- // fprintf(stdout, "start user th!!!!!!!!!!!!!!!!!!!!!\n");
   ThreadUser* threadUser = (ThreadUser*)f;
   currentThread->space->InitRegisters();
   currentThread->space->RestoreState();
 
   machine->WriteRegister(PCReg, threadUser->f);
   machine->WriteRegister(NextPCReg, (threadUser->f)+4);
-
-
   machine->WriteRegister(4, threadUser->arg);
 
-  // TODO: add different spaces for different threads
-  //machine->WriteRegister(StackReg, 0);
+  //fprintf(stdout,"argument %d thread %d\n",threadUser->arg,currentThread->numberOfThread);
+
+
   machine->WriteRegister(StackReg, machine->ReadRegister(StackReg) - 2*PageSize - currentThread->numberOfThread*PageSize);
-    int value = machine->ReadRegister(StackReg);
-    printf("%d : ", value);
+
   machine->Run();
 }
+void do_UserThreadJoin( int ThreadNum){
+    fprintf(stdout, "waiting on thread %d\n",ThreadNum);
+   
+    while(currentThread->space->bitmap->Test(ThreadNum))
+        {
+ 	currentThread->Yield();
+     //   fprintf(stdout, "Waiting on thread to perform join\n");
+        }
+    fprintf(stdout, "Join Successful\n");
+    do_UserThreadExit();
+}
+
