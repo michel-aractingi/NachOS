@@ -16,6 +16,7 @@ Thread *currentThread;		// the thread we are running now
 Thread *threadToBeDestroyed;	// the thread that just finished
 Scheduler *scheduler;		// the ready list
 Interrupt *interrupt;		// interrupt status
+FrameProvider *PFN;
 Statistics *stats;		// performance metrics
 Timer *timer;			// the hardware timer device,
 					// for invoking context switches
@@ -154,6 +155,7 @@ Initialize (int argc, char **argv)
     currentThread = new Thread ("main");
     currentThread->setStatus (RUNNING);
     
+    PFN = new FrameProvider(NumPhysPages);
 
     interrupt->Enable ();
     CallOnUserAbort (Cleanup);	// if user hits ctl-C
@@ -184,6 +186,7 @@ void
 Cleanup ()
 {
     printf ("\nCleaning up...\n");
+    delete PFN;
 #ifdef NETWORK
     delete postOffice;
 #endif

@@ -20,7 +20,7 @@
 #include "addrspace.h"
 #include "noff.h"
 #include "synch.h"
-
+#include "frameprovider.h"
 #include <strings.h>		/* for bzero */
 
 //----------------------------------------------------------------------
@@ -93,7 +93,6 @@ AddrSpace::AddrSpace (OpenFile * executable)
 {
     NoffHeader noffH;
     unsigned int i, size;
-
     threadsLock = new Semaphore("lock threads", 1);
     
 
@@ -121,7 +120,7 @@ AddrSpace::AddrSpace (OpenFile * executable)
     for (i = 0; i < numPages; i++)
       {
 	  pageTable[i].virtualPage = i;	// for now, virtual page # = phys page #
-	  pageTable[i].physicalPage = i;
+	  pageTable[i].physicalPage = PFN->GetEmptyFrame();
 	  pageTable[i].valid = TRUE;
 	  pageTable[i].use = FALSE;
 	  pageTable[i].dirty = FALSE;

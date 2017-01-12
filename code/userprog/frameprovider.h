@@ -6,11 +6,11 @@
 
 class FrameProvider {
     public:
-        FrameProvider (int);
+        FrameProvider (int n);
         ~FrameProvider ();
 
-        int GetEmptyFrame(int);
-        void ReleaseFrame(int);
+        int GetEmptyFrame();
+        void ReleaseFrame(int n);
         int NumAvailFrames();
     private:
         BitMap* bitmap;
