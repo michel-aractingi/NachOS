@@ -68,3 +68,19 @@ void do_UserThreadJoin( int ThreadNum){
     do_UserThreadExit();
 }
 
+void createProc(int lol) {
+  // for (int i=0; i>lol; i++) {}
+  currentThread->space->RestoreState();
+  currentThread->space->InitRegisters();
+  machine->Run();
+}
+
+void do_ForkExec(char *f) {
+  OpenFile* exec = fileSystem->Open (f);
+  AddrSpace* space = new AddrSpace (exec);
+  Thread* proc = new Thread(f);
+
+  proc->space = space;
+  proc->Fork(createProc, 0);
+
+}

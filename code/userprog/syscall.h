@@ -37,6 +37,7 @@
 #define SC_UserThreadCreate 16
 #define SC_UserThreadExit   17
 #define SC_UserThreadJoin   18
+ #define SC_ForkExec   19
 
 #ifdef IN_USER_MODE
 
@@ -146,6 +147,7 @@ void PutInt(int n);
 int  UserThreadCreate (void func (void *arg), void *arg);
 void UserThreadExit();
 void UserThreadJoin(int ThreadNum);
+int ForkExec(char *s);
 #endif // IN_USER_MODE
 
 #endif /* SYSCALL_H */

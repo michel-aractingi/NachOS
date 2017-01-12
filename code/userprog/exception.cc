@@ -73,7 +73,7 @@ copyStringFromMachine ( int from , char *to  , int size){
 		
 		if(!machine->ReadMem(from + i*4, 1 , &ch)){fprintf(stdout,"error");}
 		to[i] = (char) ch;
-		fprintf(stdout,"%d\n",ch);
+		//fprintf(stdout,"%d\n",ch);
 	}
 
 to[i] = '\0';
@@ -176,6 +176,12 @@ ExceptionHandler(ExceptionType which)
       DEBUG('a', "UserThreadJoin exception.\n");
     //  fprintf(stdout,"r4 %d\n",machine->ReadRegister(4));
       do_UserThreadJoin(machine->ReadRegister(4));
+      break;
+    }
+    case SC_ForkExec: {
+      DEBUG('a', "ForkExec exception.\n");
+      copyStringFromMachine(machine->ReadRegister(4),buff,MAX_STRING_SIZE);
+      do_ForkExec(buff);
       break;
     }
     default: {
