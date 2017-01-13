@@ -24,6 +24,9 @@ int do_UserThreadCreate(int f, int arg) {
   bit_lock->P();
   newThread->space->AddThread();
   newThread->numberOfThread = newThread->space->bitmap->Find();
+  newThread->space->semJoin[newThread->numberOfThread].semaphore = new Semaphore ("Join Semaphore",0);
+  newThread->space->semJoin[newThread->numberOfThread].counter = 0;
+  fprintf(stdout,"counter %d\n", newThread->space->semJoin[newThread->numberOfThread].counter);
   bit_lock->V();
   if(newThread->numberOfThread == -1) return -1;
   newThread->Fork(StartUserThread, (int)threadUser);
@@ -32,6 +35,9 @@ int do_UserThreadCreate(int f, int arg) {
 
 int do_UserThreadExit() {
   currentThread->space->ExitThread();
+  if(currentThread->space->semJoin[currentThread->numberOfThread].counter != 0){
+  currentThread->space->semJoin[currentThread->numberOfThread].semaphore->V();
+}
   fprintf(stdout, "Thread %d exited \n",currentThread->numberOfThread);
   currentThread->space->bitmap->Clear(currentThread->numberOfThread);
   currentThread->Finish();
@@ -59,13 +65,15 @@ void StartUserThread(int f) {
 void do_UserThreadJoin( int ThreadNum){
     fprintf(stdout, "waiting on thread %d\n",ThreadNum);
    
-    while(currentThread->space->bitmap->Test(ThreadNum))
-        {
- 	currentThread->Yield();
+    //while(currentThread->space->bitmap->Test(ThreadNum))
+      //  {
+ //	currentThread->Yield();
      //   fprintf(stdout, "Waiting on thread to perform join\n");
-        }
+   //     }
+    currentThread->space->semJoin[ThreadNum].counter++;
+    currentThread->space->semJoin[ThreadNum].semaphore->P();
     fprintf(stdout, "Join Successful\n");
-    do_UserThreadExit();
+   // do_UserThreadExit();
 }
 
 void createProc(int lol) {

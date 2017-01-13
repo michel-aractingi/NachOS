@@ -15,6 +15,7 @@ void incr(void *i) {
 void sum(void *i) {
  //int thread_num = *((int *)i) ;
   UserThreadJoin( *((int *)i));
+  UserThreadExit();
 }
 
 int main() {
@@ -25,10 +26,10 @@ int main() {
         //	PutChar('2');PutChar('\n');
         UserThreadCreate(incr, (void*)3);
  	//	PutChar('3');PutChar('\n');
-    	UserThreadCreate(sum, (void*)1);
-        UserThreadCreate(sum, (void*)2);
-	//UserThreadCreate(incr, (void*)3);
-    	//UserThreadCreate(incr, (void*)5);
+    	//UserThreadCreate(sum, (void*)1);
+        //UserThreadCreate(sum, (void*)2);
+	UserThreadCreate(sum, (void*)1);
+    	UserThreadCreate(sum, (void*)2);
 
  return 0 ;
 }

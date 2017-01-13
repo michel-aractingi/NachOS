@@ -71,7 +71,7 @@ copyStringFromMachine ( int from , char *to  , int size){
 	for(i=0;i<size;i++)
 	{
 		
-		if(!machine->ReadMem(from + i*4, 1 , &ch)){fprintf(stdout,"error");}
+	if(!machine->ReadMem(from + i, 1 , &ch)){fprintf(stdout,"error");}
 		to[i] = (char) ch;
 		//fprintf(stdout,"%d\n",ch);
 	}
@@ -132,9 +132,10 @@ ExceptionHandler(ExceptionType which)
     }
     case SC_PutString: {
       DEBUG('a', "PutString exception.\n");
-	fprintf(stdout,"R4 %d\n",(char)machine->ReadRegister(2));
-      copyStringFromMachine(machine->ReadRegister(4),buff,MAX_STRING_SIZE);fprintf(stdout,"buffer %s\n",buff);
-      synchconsole->SynchPutString(buff);// fprintf(stdout,"out of put\n");
+	//fprintf(stdout,"R4 %d\n",machine->ReadRegister(4));
+      	copyStringFromMachine(machine->ReadRegister(4),buff,MAX_STRING_SIZE);
+	//fprintf(stdout,"buffer %s\n",buff);
+      	synchconsole->SynchPutString(buff);// fprintf(stdout,"out of put\n");
       break;
     }
     case SC_Exit: {

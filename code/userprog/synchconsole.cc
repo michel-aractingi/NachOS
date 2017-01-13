@@ -58,7 +58,7 @@ void SynchConsole::SynchPutString(const char s[] )
     if(s[i] == '\0') break;
     synchconsole->SynchPutChar(s[i]);
     }
-    fprintf(stdout,"buffer %s with s[0] %d\n",s,s[0]);
+//    fprintf(stdout,"buffer %s with s[0] %d\n",s,s[0]);
     sem_lock->V();
     
 }

@@ -101,6 +101,8 @@ Machine::ReadMem(int addr, int size, int *value)
     switch (size) {
       case 1:
 	data = machine->mainMemory[physicalAddress];
+ 	//fprintf(stdout,"physical address %d with data %d\n",physicalAddress,data);
+        //fprintf(stdout,"data from phys addr 1632 %d\n",machine->mainMemory[physicalAddress]);
 	*value = data;
 	break;
 	
@@ -149,18 +151,22 @@ Machine::WriteMem(int addr, int size, int value)
     }
     switch (size) {
       case 1:
+        //fprintf(stdout,"writemem physical address %d\n",physicalAddress);
 	machine->mainMemory[physicalAddress] = (unsigned char) (value & 0xff);
 	break;
 
       case 2:
 	*(unsigned short *) &machine->mainMemory[physicalAddress]
 		= ShortToMachine((unsigned short) (value & 0xffff));
+
 	break;
       
       case 4:
 	*(unsigned int *) &machine->mainMemory[physicalAddress]
 		= WordToMachine((unsigned int) value);
-	break;
+       // fprintf(stdout,"writemem  4 physical address %d with data %d\n",physicalAddress,machine->mainMemory[physicalAddress]);
+	
+break;
 	
       default: ASSERT(FALSE);
     }

@@ -17,9 +17,23 @@
 #include "filesys.h"
 // #include "synch.h"
 #include "bitmap.h"
-
+#include "synch.h"
 #define UserStackSize		1024	// increase this as necessary!
 #define NumberOfThreads     8
+
+/*typedef struct SemJoin {
+   Semaphore *semaphore;
+   int counter;
+} SemJoin;*/
+class SemJoin
+{
+  public:
+//  SemJoin(int n);
+ // ~SemJoin(); 
+  int counter;
+  Semaphore *semaphore;
+  
+};
 
 class AddrSpace
 {
@@ -41,6 +55,7 @@ class AddrSpace
     int dothis();
 
     BitMap *bitmap;
+    SemJoin *semJoin;
   private:
       TranslationEntry * pageTable;	// Assume linear page table translation
     // for now!

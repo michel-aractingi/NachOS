@@ -207,7 +207,7 @@ Machine::DumpState()
 
 int Machine::ReadRegister(int num)
     {
-	ASSERT((num >= 0) && (num < NumTotalRegs));
+	ASSERT((num >= 0) && (num < NumTotalRegs));//fprintf(stdout,"register 4 ret%d\n",registers[num]);
 	return registers[num];
     }
 
