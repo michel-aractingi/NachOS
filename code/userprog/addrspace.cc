@@ -47,7 +47,7 @@ SwapHeader (NoffHeader * noffH)
 }
 
 static Semaphore *threadsLock;
-/*
+
 static void ReadAtVirtual(OpenFile *executable,
                           int virtualaddr,
                           int numBytes,
@@ -72,7 +72,7 @@ static void ReadAtVirtual(OpenFile *executable,
   machine->pageTable = prevPageTable;
   machine->pageTableSize = prevPageTableSize;
 
-}*/
+}
 
 //----------------------------------------------------------------------
 // AddrSpace::AddrSpace
@@ -98,8 +98,6 @@ AddrSpace::AddrSpace (OpenFile * executable)
     
 
     executable->ReadAt ((char *) &noffH, sizeof (noffH), 0);
-//ReadAtVirtual(executable,noffH,sizeof(noffH),0,0,0);
-      
 
     if ((noffH.noffMagic != NOFFMAGIC) &&
 	(WordToHost (noffH.noffMagic) == NOFFMAGIC))
@@ -124,7 +122,8 @@ AddrSpace::AddrSpace (OpenFile * executable)
     for (i = 0; i < numPages; i++)
       {
 	  pageTable[i].virtualPage = i;	// for now, virtual page # = phys page #
-	  pageTable[i].physicalPage = i;// PFN->GetEmptyFrame();
+	  pageTable[i].physicalPage = PFN->GetEmptyFrame() ; 
+//fprintf(stdout,"i %d PFN Frame %d \n",i,pageTable[i].physicalPage);
 	  pageTable[i].valid = TRUE;
 	  pageTable[i].use = FALSE;
 	  pageTable[i].dirty = FALSE;
@@ -135,7 +134,6 @@ AddrSpace::AddrSpace (OpenFile * executable)
 
        bitmap  = new BitMap(UserStackSize/NumberOfThreads);
        semJoin = new SemJoin[UserStackSize/NumberOfThreads];
-fprintf(stdout,"asa\n");
 // zero out the entire address space, to zero the unitialized data segment 
 // and the stack segment
     bzero (machine->mainMemory, size);
@@ -145,11 +143,11 @@ fprintf(stdout,"asa\n");
       {
 	  DEBUG ('a', "Initializing code segment, at 0x%x, size %d\n",
 		 noffH.code.virtualAddr, noffH.code.size);
-      executable->ReadAt (&(machine->mainMemory[noffH.code.virtualAddr]),
-                         noffH.code.size, noffH.code.inFileAddr);
+//      executable->ReadAt (&(machine->mainMemory[noffH.code.virtualAddr]),
+  //                       noffH.code.size, noffH.code.inFileAddr);
 
 
-//	   ReadAtVirtual(executable,noffH.code.virtualAddr,noffH.code.size,noffH.code.inFileAddr,pageTable,numPages);
+	   ReadAtVirtual(executable,noffH.code.virtualAddr,noffH.code.size,noffH.code.inFileAddr,pageTable,numPages);
 
 
       }
@@ -157,12 +155,12 @@ fprintf(stdout,"asa\n");
       {
 	  DEBUG ('a', "Initializing data segment, at 0x%x, size %d\n",
 		 noffH.initData.virtualAddr, noffH.initData.size);
-      executable->ReadAt (&(machine->mainMemory[noffH.initData.virtualAddr]),
-                        noffH.initData.size, noffH.initData.inFileAddr);
+//      executable->ReadAt (&(machine->mainMemory[noffH.initData.virtualAddr]),
+  //                      noffH.initData.size, noffH.initData.inFileAddr);
 	   
 
 
-//ReadAtVirtual(executable,noffH.code.virtualAddr,noffH.code.size,noffH.code.inFileAddr,pageTable,numPages);
+ReadAtVirtual(executable,noffH.initData.virtualAddr,noffH.initData.size,noffH.initData.inFileAddr,pageTable,numPages);
       }
 
 
@@ -226,6 +224,9 @@ AddrSpace::InitRegisters ()
 void
 AddrSpace::SaveState ()
 {
+pageTable=machine->pageTable;
+machine->pageTableSize = numPages;
+
 }
 
 //----------------------------------------------------------------------

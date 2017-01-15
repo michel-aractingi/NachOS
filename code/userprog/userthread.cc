@@ -26,7 +26,7 @@ int do_UserThreadCreate(int f, int arg) {
   newThread->numberOfThread = newThread->space->bitmap->Find();
   newThread->space->semJoin[newThread->numberOfThread].semaphore = new Semaphore ("Join Semaphore",0);
   newThread->space->semJoin[newThread->numberOfThread].counter = 0;
-  fprintf(stdout,"counter %d\n", newThread->space->semJoin[newThread->numberOfThread].counter);
+ // fprintf(stdout,"counter %d\n", newThread->space->semJoin[newThread->numberOfThread].counter);
   bit_lock->V();
   if(newThread->numberOfThread == -1) return -1;
   newThread->Fork(StartUserThread, (int)threadUser);

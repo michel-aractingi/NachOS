@@ -182,6 +182,7 @@ ExceptionHandler(ExceptionType which)
     case SC_ForkExec: {
       DEBUG('a', "ForkExec exception.\n");
       copyStringFromMachine(machine->ReadRegister(4),buff,MAX_STRING_SIZE);
+      fprintf (stdout,"string copied\n");
       do_ForkExec(buff);
       break;
     }

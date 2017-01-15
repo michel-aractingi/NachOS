@@ -29,7 +29,11 @@ int main() {
     	//UserThreadCreate(sum, (void*)1);
         //UserThreadCreate(sum, (void*)2);
 	UserThreadCreate(sum, (void*)1);
-    	UserThreadCreate(sum, (void*)2);
+    	UserThreadCreate(sum, (void*)2);     
+	UserThreadCreate(incr, (void*)3);
+     	UserThreadCreate(incr, (void*)3);     
+	UserThreadCreate(incr, (void*)3);     
+	UserThreadCreate(incr, (void*)3);
 
  return 0 ;
 }

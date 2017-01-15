@@ -1,4 +1,4 @@
-#ifdef CHANGED
+//#ifdef CHANGED
 
 #include "copyright.h"
 #include "system.h"
@@ -82,4 +82,4 @@ void SynchConsole::SynchPutInt(int value) {
   delete [] buffer;
 }
 
-#endif // CHANGED
+//#endif // CHANGED

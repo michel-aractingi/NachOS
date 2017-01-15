@@ -1,7 +1,6 @@
 #include "frameprovider.h"
 #include "system.h"
 #include "synch.h"
-
 FrameProvider::FrameProvider (int n) {
     bitmap = new BitMap(n);
 }
