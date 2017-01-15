@@ -7,7 +7,6 @@
 
 #include "copyright.h"
 #include "system.h"
-
 // This defines *all* of the global data structures used by Nachos.
 // These are all initialized and de-allocated by this file.
 
@@ -155,7 +154,7 @@ Initialize (int argc, char **argv)
     currentThread = new Thread ("main");
     currentThread->setStatus (RUNNING);
     
-    PFN = new FrameProvider(NumPhysPages);
+
 
     interrupt->Enable ();
     CallOnUserAbort (Cleanup);	// if user hits ctl-C
@@ -163,6 +162,7 @@ Initialize (int argc, char **argv)
 #ifdef USER_PROGRAM
     machine = new Machine (debugUserProg);	// this must come first
     synchconsole = new SynchConsole(NULL,NULL);
+    PFN = new FrameProvider(NumPhysPages);
 #endif
 
 #ifdef FILESYS
@@ -186,7 +186,7 @@ void
 Cleanup ()
 {
     printf ("\nCleaning up...\n");
-    delete PFN;
+
 #ifdef NETWORK
     delete postOffice;
 #endif
@@ -194,6 +194,7 @@ Cleanup ()
 #ifdef USER_PROGRAM
     delete machine;
     delete synchconsole;
+    delete PFN;
 #endif
 
 #ifdef FILESYS_NEEDED

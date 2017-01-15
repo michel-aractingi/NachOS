@@ -15,11 +15,11 @@
 #include "interrupt.h"
 #include "stats.h"
 #include "timer.h"
-#include "frameprovider.h"
+#include "../userprog/frameprovider.h"
 
 //buffer size for copy string
 #define MAX_STRING_SIZE 10
-
+#define NumPhysPages 32
 // Initialization and cleanup routines
 extern void Initialize (int argc, char **argv);	// Initialization,
 						// called before anything else
@@ -32,11 +32,13 @@ extern Scheduler *scheduler;	// the ready list
 extern Interrupt *interrupt;	// interrupt status
 extern Statistics *stats;	// performance metrics
 extern Timer *timer;		// the hardware alarm clock
-extern FrameProvider *PFN;
+
 
 #ifdef USER_PROGRAM
 #include "machine.h"
 #include "synchconsole.h"
+class FrameProvider;
+extern FrameProvider *PFN;
 extern Machine *machine;	// user program memory and registers
 extern SynchConsole *synchconsole;
 

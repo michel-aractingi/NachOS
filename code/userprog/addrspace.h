@@ -25,6 +25,7 @@
    Semaphore *semaphore;
    int counter;
 } SemJoin;*/
+class Semaphore;
 class SemJoin
 {
   public:

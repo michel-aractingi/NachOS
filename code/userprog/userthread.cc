@@ -1,11 +1,9 @@
 #include "copyright.h"
 #include "system.h"
+#include "userthread.h"
 #include "thread.h"
 #include "addrspace.h"
 #include "synch.h"
-
-#include "userthread.h"
-
 // for test
 #include "syscall.h"
 

@@ -2,11 +2,7 @@
 #define USERTHREAD_H
 
 #include "copyright.h"
-#include "system.h"
 #include "syscall.h"
-
-
-
 typedef struct {
         int f;
         int arg;
