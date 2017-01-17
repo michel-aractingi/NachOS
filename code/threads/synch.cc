@@ -103,38 +103,113 @@ Semaphore::V ()
 // the test case in the network assignment won't work!
 Lock::Lock (const char *debugName)
 {
+  name  = debugName;
+  status = false;
+  tqueue = new List();
+  Tid = -1;
+  waiting = 0;
 }
 
 Lock::~Lock ()
 {
+  delete tqueue;
 }
 void
 Lock::Acquire ()
 {
+ IntStatus oldLevel = interrupt->SetLevel(IntOff);
+    if(this->isHeldByCurrentThread()){
+        printf("Invalid Relock Operation\n");
+     	(void) interrupt->SetLevel(oldLevel);
+	return;	   
+}
+     while(status == true){
+        waiting++;
+	tqueue->Append((void *)currentThread);
+        currentThread->Sleep ();
+}
+     status = true;
+     Tid = currentThread->numberOfThread;
+     (void) interrupt->SetLevel(oldLevel);
+     return;
 }
 void
 Lock::Release ()
 {
+ IntStatus oldLevel = interrupt->SetLevel(IntOff);
+     if(!this->isHeldByCurrentThread() || status == false){
+      	printf("Invalid Unlock Operation\n");
+       	(void) interrupt->SetLevel(oldLevel);
+	return;
 }
-
+     status = false;
+     Tid = -1;
+     if(waiting > 0){
+        waiting--;
+      	Thread *thread = (Thread*)tqueue->Remove();
+     	scheduler->ReadyToRun (thread);
+}
+     (void) interrupt->SetLevel(oldLevel);
+     return;     
+}
+bool
+Lock::isHeldByCurrentThread(){
+     return(Tid == currentThread->numberOfThread);
+}
 Condition::Condition (const char *debugName)
 {
+    name = debugName;
+    waiting = 0;
+    tqueue = new List();
 }
 
 Condition::~Condition ()
 {
+   delete tqueue;
 }
 void
 Condition::Wait (Lock * conditionLock)
 {
-    ASSERT (FALSE);
+    IntStatus oldLevel = interrupt->SetLevel(IntOff);
+    conditionLock->Release();
+    waiting++;
+    tqueue->Append((void*)currentThread);
+    currentThread->Sleep();
+    (void) interrupt->SetLevel(oldLevel);
+    conditionLock->Acquire();
+    return;
+
+
 }
 
 void
 Condition::Signal (Lock * conditionLock)
 {
+   IntStatus oldLevel = interrupt->SetLevel(IntOff);
+   if(waiting == 0){ 
+	printf("Invalid Signal Operation\n");
+ 	(void )interrupt->SetLevel(oldLevel);
+        return;
+}
+   waiting--;
+   Thread *thread = (Thread *)tqueue->Remove();
+   scheduler->ReadyToRun(thread);
+   //conditionLock->Release();
+   (void) interrupt->SetLevel(oldLevel);
+   return;
 }
 void
 Condition::Broadcast (Lock * conditionLock)
 {
+ IntStatus oldLevel = interrupt->SetLevel(IntOff);
+   if(waiting == 0){
+        printf("Invalid Signal Operation\n");
+        (void )interrupt->SetLevel(oldLevel);
+        return;
+}
+   while(waiting>0){
+	this->Signal(conditionLock);
+}
+   (void) interrupt->SetLevel(oldLevel);
+   return;
 }

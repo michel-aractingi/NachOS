@@ -87,6 +87,10 @@ class Lock
 
   private:
     const char *name;		// for debugging
+    bool status;
+    List *tqueue;
+    int Tid;
+    int waiting;
     // plus some other stuff you'll need to define
 };
 
@@ -143,6 +147,8 @@ class Condition
 
   private:
     const char *name;
+    List *tqueue;
+    int waiting;
     // plus some other stuff you'll need to define
 };
 #endif // SYNCH_H
