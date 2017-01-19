@@ -1,4 +1,4 @@
-// synchdisk.cc 
+// synchdisk.cc
 //	Routines to synchronously access the disk.  The physical disk 
 //	is an asynchronous device (disk requests return immediately, and
 //	an interrupt happens later on).  This is a layer on top of
@@ -16,6 +16,12 @@
 
 #include "copyright.h"
 #include "synchdisk.h"
+#include <new>
+
+void SectorCopy(char *dst, char *src) {
+    for(int i = 0; i < SectorSize; ++i)
+        dst[i] = src[i];
+}
 
 //----------------------------------------------------------------------
 // DiskRequestDone
@@ -40,11 +46,12 @@ DiskRequestDone (int arg)
 //	   (usually, "DISK")
 //----------------------------------------------------------------------
 
-SynchDisk::SynchDisk(const char* name)
+SynchDisk::SynchDisk(char* name)
 {
-    semaphore = new Semaphore("synch disk", 0);
-    lock = new Lock("synch disk lock");
-    disk = new Disk(name, DiskRequestDone, (int) this);
+    semaphore = new(std::nothrow) Semaphore("synch disk", 0);
+    lock = new(std::nothrow) Lock("synch disk lock");
+    cacheLock = new(std::nothrow) Lock("cacheLock");
+    disk = new(std::nothrow) Disk(name, DiskRequestDone, (int) this);
 }
 
 //----------------------------------------------------------------------
@@ -73,8 +80,21 @@ void
 SynchDisk::ReadSector(int sectorNumber, char* data)
 {
     lock->Acquire();			// only one disk I/O at a time
+    cacheLock->Acquire();
+    if(cache.inCache(sectorNumber)) {
+        SectorCopy(data, cache.Get(sectorNumber));
+        cacheLock->Release();
+        lock->Release();
+        return ;
+    }
+    cacheLock->Release();
+
     disk->ReadRequest(sectorNumber, data);
     semaphore->P();			// wait for interrupt
+    cacheLock->Acquire();
+    cache.Add(data, sectorNumber);
+    cacheLock->Release();
+
     lock->Release();
 }
 
@@ -90,9 +110,19 @@ SynchDisk::ReadSector(int sectorNumber, char* data)
 void
 SynchDisk::WriteSector(int sectorNumber, char* data)
 {
+
     lock->Acquire();			// only one disk I/O at a time
+    // cacheLock->Acquire();
+    // cache.Delete(sectorNumber);
+    // cacheLock->Release();
     disk->WriteRequest(sectorNumber, data);
     semaphore->P();			// wait for interrupt
+
+    cacheLock->Acquire();
+    cache.Delete(sectorNumber);
+    cache.Add(data, sectorNumber);
+    cacheLock->Release();
+
     lock->Release();
 }
 

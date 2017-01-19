@@ -9,10 +9,14 @@ char *p; for (p = s; *p != '\0'; p++) PutChar(*p);
 void f(void *s)
 {
 int i; for (i = 0; i < N; i++) puts((char *)s);
+
 }
 int main() {
   //int i;
   UserThreadCreate(f, (void *) THIS);
   f((void*) THAT);
+int i;
+	for (i = 0; i < 10000; i++);	
+  UserThreadExit();
   return 0;
 }

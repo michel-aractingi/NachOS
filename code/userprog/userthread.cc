@@ -55,7 +55,7 @@ void StartUserThread(int f) {
 
   //fprintf(stdout,"argument %d thread %d\n",threadUser->arg,currentThread->numberOfThread);
 
-
+//printf("Started\n");
   machine->WriteRegister(StackReg, machine->ReadRegister(StackReg) - 2*PageSize - currentThread->numberOfThread*PageSize);
 
   machine->Run();
@@ -78,15 +78,22 @@ void createProc(int lol) {
   // for (int i=0; i>lol; i++) {}
   currentThread->space->RestoreState();
   currentThread->space->InitRegisters();
+
   machine->Run();
+    printf("found\n");
 }
 
 void do_ForkExec(char *f) {
-  OpenFile* exec = fileSystem->Open (f);
-  AddrSpace* space = new AddrSpace (exec);
-  Thread* proc = new Thread(f);
+  OpenFile* exec = fileSystem->Open(f);
 
-  proc->space = space;
+  AddrSpace* aspace = new AddrSpace(exec);
+
+  Thread* proc = new Thread("10");
+
+  proc->space = aspace;
+
   proc->Fork(createProc, 0);
+    //delete exec;
+    //delete f;
 
 }

@@ -118,6 +118,7 @@ ExceptionHandler(ExceptionType which)
     }
     case SC_Exit: {
       DEBUG('a', "Exit process terminated\n");
+        printf("called this: %d \n",machine->ReadRegister(4));
       // TODO: check threads ONLY within process address space
       if (currentThread->space->GetNumOfThreads() == 0)
         Exit(machine->ReadRegister(4));
@@ -160,8 +161,9 @@ ExceptionHandler(ExceptionType which)
     case SC_ForkExec: {
       DEBUG('a', "ForkExec exception.\n");
       copyStringFromMachine(machine->ReadRegister(4),buff,MAX_STRING_SIZE);
-      fprintf (stdout,"string copied\n");
-      do_ForkExec(buff);
+      //fprintf (stdout,"string copied %s\n",buff);
+        do_ForkExec(buff);
+        //machine->WriteRegister(2 , 12);
       break;
     }
     default: {

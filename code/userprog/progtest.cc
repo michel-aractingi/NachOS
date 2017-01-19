@@ -29,7 +29,7 @@ StartProcess (char *filename)
 
     if (executable == NULL)
       {
-	  printf ("Unable to open file %s\n", filename);
+	  printf ("Unable to open files %s\n", filename);
 	  return;
       }
     space = new AddrSpace (executable);

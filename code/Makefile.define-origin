@@ -48,7 +48,7 @@ USERPROG_SRC    :=      addrspace.cc bitmap.cc exception.cc progtest.cc console.
 VM_SRC          :=
 
 FILESYS_SRC     :=      directory.cc filehdr.cc filesys.cc fstest.cc openfile.cc \
-                        synchdisk.cc disk.cc
+                        synchdisk.cc disk.cc fileblock.cc
 
 NETWORK_SRC     :=      nettest.cc post.cc network.cc
 #

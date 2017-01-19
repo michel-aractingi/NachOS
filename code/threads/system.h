@@ -18,7 +18,7 @@
 #include "../userprog/frameprovider.h"
 
 //buffer size for copy string
-#define MAX_STRING_SIZE 10
+#define MAX_STRING_SIZE 30
 #define NumPhysPages 32
 // Initialization and cleanup routines
 extern void Initialize (int argc, char **argv);	// Initialization,
@@ -51,7 +51,18 @@ extern FileSystem *fileSystem;
 
 #ifdef FILESYS
 #include "synchdisk.h"
-extern SynchDisk *synchDisk;
+#include "bitmap.h"
+extern SynchDisk   *synchDisk;
+extern Lock *directoryLock;
+extern Lock *diskmapLock;
+extern Lock *diskLock;
+extern OpenFile *vmFile;
+
+extern BitMap *diskMap;			// bitmap for allocating disk sectors
+// extern SynchDisk *vmDisk;	// our disk for secondary storage
+extern AddrSpace *reversePageTable[];
+extern Lock *memLock;
+
 #endif
 
 #ifdef NETWORK

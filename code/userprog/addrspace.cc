@@ -95,7 +95,6 @@ AddrSpace::AddrSpace (OpenFile * executable)
     NoffHeader noffH;
     unsigned int i, size;
     threadsLock = new Semaphore("lock threads", 1);
-    
 
     executable->ReadAt ((char *) &noffH, sizeof (noffH), 0);
 
@@ -122,7 +121,8 @@ AddrSpace::AddrSpace (OpenFile * executable)
     for (i = 0; i < numPages; i++)
       {
 	  pageTable[i].virtualPage = i;	// for now, virtual page # = phys page #
-	  pageTable[i].physicalPage = PFN->GetEmptyFrame() ; 
+	  pageTable[i].physicalPage = PFN->GetEmptyFrame() ;
+          //bzero((void*) &machine->mainMemory[pageTable[i].physicalPage*PageSize ] , PageSize); // modified
 //fprintf(stdout,"i %d PFN Frame %d \n",i,pageTable[i].physicalPage);
 	  pageTable[i].valid = TRUE;
 	  pageTable[i].use = FALSE;
@@ -136,7 +136,7 @@ AddrSpace::AddrSpace (OpenFile * executable)
        semJoin = new SemJoin[UserStackSize/NumberOfThreads];
 // zero out the entire address space, to zero the unitialized data segment 
 // and the stack segment
-    bzero (machine->mainMemory, size);
+      bzero (machine->mainMemory, size);
 
 // then, copy in the code and data segments into memory
     if (noffH.code.size > 0)
@@ -224,8 +224,8 @@ AddrSpace::InitRegisters ()
 void
 AddrSpace::SaveState ()
 {
-pageTable=machine->pageTable;
-machine->pageTableSize = numPages;
+    machine->pageTable = pageTable;
+    machine->pageTableSize = numPages;
 
 }
 

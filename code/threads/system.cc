@@ -166,7 +166,18 @@ Initialize (int argc, char **argv)
 #endif
 
 #ifdef FILESYS
-    synchDisk = new SynchDisk ("DISK");
+	synchDisk = new(std::nothrow) SynchDisk((char *) "DISK");
+    directoryLock = new(std::nothrow) Lock("directoryLock");
+    diskmapLock = new(std::nothrow) Lock("diskmap Lock");
+    diskLock = new(std::nothrow) Lock("diskLock");
+    vmFile = NULL;
+
+    diskMap = new(std::nothrow) BitMap(NumSectors);
+    // vmDisk = new(std::nothrow) SynchDisk("VM DISK");
+    memLock = new(std::nothrow) Lock("memLock");
+
+    for(int i = 0; i < NumPhysPages; ++i)
+	reversePageTable[i] = NULL;
 #endif
 
 #ifdef FILESYS_NEEDED
