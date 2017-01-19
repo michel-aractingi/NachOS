@@ -152,6 +152,19 @@ ExceptionHandler(ExceptionType which)
           synchconsole->SynchPutInt(value);
           break;
     }
+   
+     case SC_GetInt: {
+          DEBUG('a', "GetInt Exception\n");
+	  int a=0;
+	  int* n;
+          n=&a;
+	  synchconsole->SynchGetInt(n);
+	  //`fprintf(stdout,"buffe22r %d\n",*n);
+	  machine->WriteMem(machine->ReadRegister(4),sizeof(int), *n);
+        
+	break;
+    }
+
     case SC_UserThreadCreate: {
       DEBUG('a', "UserThreadCreate exception.\n");
       do_UserThreadCreate(machine->ReadRegister(4),
