@@ -14,6 +14,6 @@ main()
   print('a',4);
  // Halt();
   //Exit(0);
-  //return 0;
+  return 0;
 }
 
