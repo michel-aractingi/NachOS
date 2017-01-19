@@ -32,11 +32,19 @@ int do_UserThreadCreate(int f, int arg) {
 }
 
 int do_UserThreadExit() {
-  currentThread->space->ExitThread();
   if(currentThread->space->semJoin[currentThread->numberOfThread].counter != 0){
   currentThread->space->semJoin[currentThread->numberOfThread].semaphore->V();
 }
+  exitLock->P();
   fprintf(stdout, "Thread %d exited \n",currentThread->numberOfThread);
+  if(currentThread->space->isLast()){
+      if(machine->isLast()){
+          interrupt->Halt();
+}
+  machine->ExitThread();
+}
+  currentThread->space->ExitThread();
+  exitLock->V();
   currentThread->space->bitmap->Clear(currentThread->numberOfThread);
   currentThread->Finish();
   
@@ -62,16 +70,9 @@ void StartUserThread(int f) {
 }
 void do_UserThreadJoin( int ThreadNum){
     fprintf(stdout, "waiting on thread %d\n",ThreadNum);
-   
-    //while(currentThread->space->bitmap->Test(ThreadNum))
-      //  {
- //	currentThread->Yield();
-     //   fprintf(stdout, "Waiting on thread to perform join\n");
-   //     }
     currentThread->space->semJoin[ThreadNum].counter++;
     currentThread->space->semJoin[ThreadNum].semaphore->P();
     fprintf(stdout, "Join Successful\n");
-   // do_UserThreadExit();
 }
 
 void createProc(int lol) {
@@ -85,8 +86,10 @@ void do_ForkExec(char *f) {
   OpenFile* exec = fileSystem->Open (f);
   AddrSpace* space = new AddrSpace (exec);
   Thread* proc = new Thread(f);
-
   proc->space = space;
+  machine->AddThread();
+  //space->setChild();
+  //space->AddChild();
   proc->Fork(createProc, 0);
-
+  //proc->space->AddThread();
 }

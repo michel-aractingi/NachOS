@@ -1,8 +1,11 @@
 #include "syscall.h"
 
 int main()
-{
-  ForkExec("../test/userpages1");
-  ForkExec("../test/userpages2");
+{ // PutString("pass exec\n");
+  ForkExec("./userpages1");
+  PutString("pass exec 1\n");
+  //PutString("pass exec\n");
+  ForkExec("./userpages2");
+  PutString("pass exec 2\n");
   return 0;
 }

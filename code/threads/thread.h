@@ -136,7 +136,7 @@ class Thread
 // one for its state while executing user code, one for its state 
 // while executing kernel code.
 
-    int userRegisters[NumTotalRegs];	// user-level CPU register state
+    int userRegisters[40];//NumTotalRegs];	// user-level CPU register state
 
   public:
     void SaveUserState ();	// save user-level register state

@@ -16,24 +16,23 @@
 #include "stats.h"
 #include "timer.h"
 #include "../userprog/frameprovider.h"
-
+#include "synch.h"
 //buffer size for copy string
-#define MAX_STRING_SIZE 10
-#define NumPhysPages 32
+#define MAX_STRING_SIZE 30
+#define NumPhysPages 512
 // Initialization and cleanup routines
 extern void Initialize (int argc, char **argv);	// Initialization,
 						// called before anything else
 extern void Cleanup ();		// Cleanup, called when
 						// Nachos is done.
-
+extern Semaphore *exitLock;
 extern Thread *currentThread;	// the thread holding the CPU
 extern Thread *threadToBeDestroyed;	// the thread that just finished
 extern Scheduler *scheduler;	// the ready list
 extern Interrupt *interrupt;	// interrupt status
 extern Statistics *stats;	// performance metrics
 extern Timer *timer;		// the hardware alarm clock
-
-
+                                  // number of child processes
 #ifdef USER_PROGRAM
 #include "machine.h"
 #include "synchconsole.h"

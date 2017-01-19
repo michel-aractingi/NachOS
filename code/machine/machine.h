@@ -25,14 +25,15 @@
 #include "utility.h"
 #include "translate.h"
 #include "disk.h"
-
+#include "synch.h"
+class Semaphore;
 // Definitions related to the size, and format of user memory
 
 #define PageSize 	SectorSize 	// set the page size equal to
 					// the disk sector size, for
 					// simplicity
 
-#define NumPhysPages    32
+#define NumPhysPages    512
 #define MemorySize 	(NumPhysPages * PageSize)
 #define TLBSize		4		// if there is a TLB, make it small
 
@@ -181,12 +182,18 @@ class Machine {
 
     TranslationEntry *pageTable;
     unsigned int pageTableSize;
+    void AddThread();
+    void ExitThread();
+    int GetNumOfThreads();
+    bool isLast();
+    Semaphore *threadsLock;
 
   private:
     bool singleStep;		// drop back into the debugger after each
 				// simulated instruction
     int runUntilTime;		// drop back into the debugger when simulated
 				// time reaches this value
+    unsigned int numOfThreads;  // Total number of threads running within the system
 };
 
 extern void ExceptionHandler(ExceptionType which);

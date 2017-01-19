@@ -55,7 +55,8 @@ void CheckEndian()
 Machine::Machine(bool debug)
 {
     int i;
-
+    numOfThreads = 0; 
+    this->threadsLock = new Semaphore("lock on number of thread",1);
     for (i = 0; i < NumTotalRegs; i++)
         registers[i] = 0;
     mainMemory = new char[MemorySize];
@@ -217,4 +218,28 @@ void Machine::WriteRegister(int num, int value)
 	// DEBUG('m', "WriteRegister %d, value %d\n", num, value);
 	registers[num] = value;
     }
+void Machine::AddThread() {
+  threadsLock->P();
+  numOfThreads++;
+  threadsLock->V();
+}
+
+void Machine::ExitThread() {
+  this->threadsLock->P();
+  numOfThreads--;
+  this->threadsLock->V();
+}
+
+int Machine::GetNumOfThreads() {
+  return numOfThreads;
+}
+bool Machine::isLast(){
+  this->threadsLock->P();
+  bool stat=false;
+  if(this->GetNumOfThreads()==0){
+      stat = true;
+}
+  this->threadsLock->V();
+  return stat;
+}
 

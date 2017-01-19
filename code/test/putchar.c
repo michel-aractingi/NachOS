@@ -12,6 +12,8 @@ int
 main()
 {
   print('a',4);
-  Halt();
+ // Halt();
+  //Exit(0);
+  //return 0;
 }
 

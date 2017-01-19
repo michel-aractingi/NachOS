@@ -98,7 +98,7 @@ ExceptionHandler(ExceptionType which)
     switch (type) {
     case SC_Halt: {
       DEBUG('a', "Shutdown, initiated by user program.\n");
-      if (currentThread->space->GetNumOfThreads() == 0)
+//      if (currentThread->space->GetNumOfThreads() == 0 && childCount == 0)
         interrupt->Halt();
       break;
     }
@@ -118,11 +118,23 @@ ExceptionHandler(ExceptionType which)
     }
     case SC_Exit: {
       DEBUG('a', "Exit process terminated\n");
-      // TODO: check threads ONLY within process address space
-      if (currentThread->space->GetNumOfThreads() == 0)
-        Exit(machine->ReadRegister(4));
+     exitLock->P();
+     if(currentThread->space->isLast())
+{
+     if(machine->isLast()){
+          interrupt->Halt();
+}
+        machine->ExitThread();
+}
+        
+     currentThread->space->ExitThread(); 
+     exitLock->V();
+     currentThread->Finish();
+ 
+        //Exit(machine->ReadRegister(4));
       break;
-    }
+
+ }
     case SC_GetChar: {
       DEBUG('a', "GetChar exception.\n");
       machine->WriteRegister(2,(int)synchconsole->SynchGetChar());
@@ -160,7 +172,7 @@ ExceptionHandler(ExceptionType which)
     case SC_ForkExec: {
       DEBUG('a', "ForkExec exception.\n");
       copyStringFromMachine(machine->ReadRegister(4),buff,MAX_STRING_SIZE);
-      fprintf (stdout,"string copied\n");
+      //fprintf (stdout,"string copied\n");
       do_ForkExec(buff);
       break;
     }

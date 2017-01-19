@@ -8,10 +8,12 @@ char *p; for (p = s; *p != '\0'; p++) PutChar(*p);
 }
 void f(void *s)
 {
-int i; for (i = 0; i < N; i++) puts((char *)s);
+
+int i; for (i = 0; i < N; i++) puts((char *)s); UserThreadExit();
 }
 int main() {
   //int i;
+  //char *p = "as";
   UserThreadCreate(f, (void *) THIS);
   f((void*) THAT);
   return 0;

@@ -95,7 +95,7 @@ AddrSpace::AddrSpace (OpenFile * executable)
     NoffHeader noffH;
     unsigned int i, size;
     threadsLock = new Semaphore("lock threads", 1);
-    
+    numOfThreads = 0;   
 
     executable->ReadAt ((char *) &noffH, sizeof (noffH), 0);
 
@@ -123,7 +123,7 @@ AddrSpace::AddrSpace (OpenFile * executable)
       {
 	  pageTable[i].virtualPage = i;	// for now, virtual page # = phys page #
 	  pageTable[i].physicalPage = PFN->GetEmptyFrame() ; 
-//fprintf(stdout,"i %d PFN Frame %d \n",i,pageTable[i].physicalPage);
+//fprintf(stdout,"from loop i %d PFN Frame %d \n",i,pageTable[i].physicalPage);
 	  pageTable[i].valid = TRUE;
 	  pageTable[i].use = FALSE;
 	  pageTable[i].dirty = FALSE;
@@ -131,12 +131,12 @@ AddrSpace::AddrSpace (OpenFile * executable)
 	  // a separate page, we could set its 
 	  // pages to be read-only
       }
-
+//fprintf(stdout,"numpages %d\n",numPages);
        bitmap  = new BitMap(UserStackSize/NumberOfThreads);
        semJoin = new SemJoin[UserStackSize/NumberOfThreads];
 // zero out the entire address space, to zero the unitialized data segment 
 // and the stack segment
-    bzero (machine->mainMemory, size);
+    //bzero (&machine->mainMemory[pageTable[0].physicalPage], PageSize*numPages);//size);
 
 // then, copy in the code and data segments into memory
     if (noffH.code.size > 0)
@@ -176,6 +176,10 @@ AddrSpace::~AddrSpace ()
 {
   // LB: Missing [] for delete
   // delete pageTable;
+ /* if(isChild()){
+     this->RemoveChild();
+     Child = false;
+  }*/
   delete [] pageTable;
   // End of modification
 }
@@ -225,7 +229,7 @@ void
 AddrSpace::SaveState ()
 {
 pageTable=machine->pageTable;
-machine->pageTableSize = numPages;
+numPages = machine->pageTableSize;
 
 }
 
@@ -260,3 +264,10 @@ int AddrSpace::GetNumOfThreads() {
   return numOfThreads;
 }
 
+bool AddrSpace::isLast(){
+  bool stat = false;
+  threadsLock->P();
+  if(this->GetNumOfThreads()==0) stat = true;
+  threadsLock->V();
+  return stat;
+}

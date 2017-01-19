@@ -53,7 +53,9 @@ class AddrSpace
     void AddThread();
     void ExitThread();
     int GetNumOfThreads();
+    bool isLast();
     int dothis();
+   
 
     BitMap *bitmap;
     SemJoin *semJoin;
@@ -63,7 +65,6 @@ class AddrSpace
     unsigned int numPages;	// Number of pages in the virtual 
     // address space
     unsigned int numOfThreads;  // number of threads within this address space
-
 };
 
 #endif // ADDRSPACE_H
