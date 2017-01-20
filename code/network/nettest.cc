@@ -82,16 +82,16 @@ MailTest(int farAddr)
 }*/
 //Ring Topology of n-Machines
 void
-MailTest(int farAddr)
+MailTest(int farAddr,int ownAddr)
 {
 	PacketHeader outPktHdr, inPktHdr;
 	MailHeader outMailHdr, inMailHdr;
 	const char * data = "Token";
 	const char * ack = "ack";
         char buffer[MaxMailSize];
-
+        printf("Machine %d\n",ownAddr);
 	// Send the first message if machine 0
-	if(farAddr==1){
+	if(ownAddr==0){
 		outPktHdr.to = farAddr;		
 		outMailHdr.to = 0;
 		outMailHdr.from = 1;
