@@ -21,11 +21,14 @@
 #include "thread.h"
 #define UserStackSize		1024	// increase this as necessary!
 #define NumberOfAreas     8
+
+
 /*typedef struct SemJoin {
    Semaphore *semaphore;
    int counter;
 } SemJoin;*/
 class Semaphore;
+class FileVector;
 class Thread;
 class SemJoin
 {
@@ -62,6 +65,8 @@ class AddrSpace
     BitMap *bitmap;
     SemJoin *semJoin;
     int GetPid();
+    int currentSector;
+    FileVector *fileVector;
   private:
       TranslationEntry * pageTable;	// Assume linear page table translation
     // for now!

@@ -17,6 +17,7 @@
 #include "timer.h"
 #include "../userprog/frameprovider.h"
 #include "synch.h"
+#include "filetable.h"
 //buffer size for copy string
 #define MAX_STRING_SIZE 30
 #define NumPhysPages 512
@@ -40,7 +41,8 @@ class FrameProvider;
 extern FrameProvider *PFN;
 extern Machine *machine;	// user program memory and registers
 extern SynchConsole *synchconsole;
-
+extern Lock *ioLock;               // lock for making Read/Write atomic
+extern OpenFileTable *globalFileTable;
 #endif
 
 #ifdef FILESYS_NEEDED		// FILESYS or FILESYS_STUB

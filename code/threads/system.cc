@@ -26,11 +26,21 @@ FileSystem *fileSystem;
 
 #ifdef FILESYS
 SynchDisk *synchDisk;
+Lock *directoryLock;
+Lock *diskmapLock;
+Lock *diskLock;
+OpenFile *vmFile;
+BitMap *diskMap;			// bitmap for allocating disk sectors
+// extern SynchDisk *vmDisk;	// our disk for secondary storage
+AddrSpace *reversePageTable[NumPhysPages];
+Lock *memLock;
 #endif
 
 #ifdef USER_PROGRAM		// requires either FILESYS or FILESYS_STUB
 Machine *machine;		// user program memory and registers
 SynchConsole *synchconsole;
+Lock *ioLock;               // lock for making Read/Write atomic
+OpenFileTable *globalFileTable;
 #endif
 
 #ifdef NETWORK
@@ -161,6 +171,8 @@ Initialize (int argc, char **argv)
     machine = new Machine (debugUserProg);	// this must come first
     synchconsole = new SynchConsole(NULL,NULL);
     PFN = new FrameProvider(NumPhysPages);
+	ioLock = new Lock("IO Lock");               // lock for making Read/Write atomic
+	globalFileTable = new OpenFileTable();
 #endif
 
 #ifdef FILESYS

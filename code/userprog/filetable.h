@@ -26,7 +26,9 @@
 #include <new>
 #define MAX_OPEN_FILE_ID 100 // defines the max number of OpenFileId's a process can have
 #define FREE_SPACE -1
-
+typedef int OpenFileId;
+#define ConsoleInput	0
+#define ConsoleOutput	1
 
 // stores an OpenFile object and a reference count of all
 // file descriptors to that file

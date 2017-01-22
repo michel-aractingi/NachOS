@@ -105,7 +105,6 @@ AddrSpace::AddrSpace (OpenFile * executable)
     Tid = 0;
     Pid = machine->givePid();
     executable->ReadAt ((char *) &noffH, sizeof (noffH), 0);
-
 //    fprintf(stdout,"new proc %d\n",Pid);
     if ((noffH.noffMagic != NOFFMAGIC) &&
 	(WordToHost (noffH.noffMagic) == NOFFMAGIC))

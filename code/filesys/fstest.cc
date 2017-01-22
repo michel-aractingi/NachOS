@@ -232,39 +232,39 @@ void FileSystemShell(){
         if (fgets(buffer, 80 , stdin) == NULL) break;
         ParseArguments(buffer, s, &number_of_arguments,arguments);
         if(!strcmp(arguments[0], "ls" )){
-            fileSystem->List();
+            Lists();
         }
         else if(!strcmp(arguments[0], "cd")){
 
             fileSystem->ChangeDir(arguments[1],sector);
         }
         else if(!strcmp(arguments[0], "cp")){
-            Copy(arguments[1],arguments[2]);
+            //Copy(arguments[1],arguments[2]);
         }
         else if(!strcmp(arguments[0], "rm")){
-            fileSystem->Remove(arguments[1]);
+            //fileSystem->Remove(arguments[1]);
         }
         else if(!strcmp(arguments[0], "mkdir")){
-            fileSystem->MakeDirectory(arguments[1],0,1);
+            //fileSystem->MakeDirectory(arguments[1],0,1);
         }
         else if(!strcmp(arguments[0], "p")){
             fileSystem->Print();
         }
         else if(!strcmp(arguments[0], "pwd")){
-            fileSystem->WorkingDirectory();
+            //fileSystem->WorkingDirectory();
         }
         else if(!strcmp(arguments[0], "gs")){
-            int data = (int) arguments[1][0] - 48;
-            fileSystem->GoToSector(data);
+            //int data = (int) arguments[1][0] - 48;
+            //fileSystem->GoToSector(data);
         }
         else if(!strcmp(arguments[0], "pd")){
-            int data = (int) arguments[1][0] - 48;
+            //int data = (int) arguments[1][0] - 48;
 
-            fileSystem->List(data);
+            //fileSystem->List(data);
         }
         else if(!strcmp(arguments[0], "ud")){
-            int data = (int) arguments[1][0] - 48;
-            fileSystem->UpdateDirectory(data);
+            //int data = (int) arguments[1][0] - 48;
+            //fileSystem->UpdateDirectory(data);
         }
         else{
             printf("Invalid Command%s1",arguments[0]);

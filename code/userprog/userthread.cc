@@ -69,7 +69,7 @@ void createProc(int lol) {
 
 void do_ForkExec(char *f) {
 
-  OpenFile* exec = fileSystem->Open (f);
+  OpenFile* exec = fileSystem->Open (f,1);
   //fprintf(stdout,"reached\n"); 
   AddrSpace* space = new AddrSpace (exec);
   Thread* proc = new Thread(f);
