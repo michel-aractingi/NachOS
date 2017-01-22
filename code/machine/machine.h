@@ -187,6 +187,8 @@ class Machine {
     int GetNumOfThreads();
     bool isLast();
     Semaphore *threadsLock;
+    Semaphore *forklock; 
+    unsigned int givePid();
 
   private:
     bool singleStep;		// drop back into the debugger after each
@@ -194,6 +196,7 @@ class Machine {
     int runUntilTime;		// drop back into the debugger when simulated
 				// time reaches this value
     unsigned int numOfThreads;  // Total number of threads running within the system
+    unsigned int Pid;
 };
 
 extern void ExceptionHandler(ExceptionType which);

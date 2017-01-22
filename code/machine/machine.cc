@@ -55,7 +55,9 @@ void CheckEndian()
 Machine::Machine(bool debug)
 {
     int i;
-    numOfThreads = 0; 
+    numOfThreads = 0;
+    Pid = 0;
+    this->forklock = new Semaphore("lock on fork",1); 
     this->threadsLock = new Semaphore("lock on number of thread",1);
     for (i = 0; i < NumTotalRegs; i++)
         registers[i] = 0;
@@ -241,5 +243,11 @@ bool Machine::isLast(){
 }
   this->threadsLock->V();
   return stat;
+}
+unsigned int Machine::givePid(){
+  this->threadsLock->P();
+  int id = Pid++;
+  this->threadsLock->V();
+  return id;
 }
 

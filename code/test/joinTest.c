@@ -8,12 +8,15 @@ void incr(void *i) {
   if(*((int *)i) == 4){ 
 	PutChar('s');	
 	PutChar('\n');}*/
+  int f;
+    for(f=0; f<25500;f++) {}
   PutChar('s');PutChar('\n');
   UserThreadExit();
 }
 
 void sum(void *i) {
- //int thread_num = *((int *)i) ;
+ //inst thread_num = *((int *)i) ;
+ //   PutString("argument for join");PutInt(*((int *)i));PutChar('\n');
   UserThreadJoin( *((int *)i));
   UserThreadExit();
 }
@@ -21,19 +24,24 @@ void sum(void *i) {
 int main() {
 	//fprintf(stdout, "ok!!!!!!!!!!!!!!!!!!!!!\n");
 	//	PutChar('1');PutChar('\n');
-    	UserThreadCreate(incr, (void*)3);
+    	int c =UserThreadCreate(incr, (void*)3);
 	//UserThreadCreate(sum, (void*)0);
         //	PutChar('2');PutChar('\n');
-        UserThreadCreate(incr, (void*)3);
+        int a  = UserThreadCreate(incr, (void*)3);
+        UserThreadJoin(a);        
  	//	PutChar('3');PutChar('\n');
     	//UserThreadCreate(sum, (void*)1);
         //UserThreadCreate(sum, (void*)2);
-	UserThreadCreate(sum, (void*)1);
-    	UserThreadCreate(sum, (void*)2);     
-	UserThreadCreate(incr, (void*)3);
-     	UserThreadCreate(incr, (void*)3);     
+	int b = UserThreadCreate(sum, (void*)c);
+    	UserThreadCreate(sum, (void*)b);     
+ //       PutString("ab\n");PutInt(a-1);PutInt(b-1);
+	UserThreadCreate(incr, (void*)b);
+     	/*UserThreadCreate(incr, (void*)3);     
 	UserThreadCreate(incr, (void*)3);     
-	UserThreadCreate(incr, (void*)3);
+	UserThreadCreate(incr, (void*)3);*/
+     //   PutInt(a);
+   //     PutChar('\n');
+ //       PutInt(b);
 
  return 0 ;
 }

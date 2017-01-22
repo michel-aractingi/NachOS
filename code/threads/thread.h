@@ -89,7 +89,8 @@ class Thread
     // NOTE -- thread being deleted
     // must not be running when delete 
     // is called
-    int numberOfThread;
+    unsigned int numberOfThread;   //thread position on bitmap
+    unsigned int Tid; 
     // basic thread operations
 
     void Fork (VoidFunctionPtr func, int arg);	// Make thread run (*func)(arg)

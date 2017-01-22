@@ -126,7 +126,8 @@ ExceptionHandler(ExceptionType which)
 }
         machine->ExitThread();
 }
-        
+     currentThread->space->bitmap->Clear(currentThread->numberOfThread);
+     currentThread->space->Removeid(currentThread->numberOfThread);
      currentThread->space->ExitThread(); 
      exitLock->V();
      currentThread->Finish();
@@ -167,8 +168,9 @@ ExceptionHandler(ExceptionType which)
 
     case SC_UserThreadCreate: {
       DEBUG('a', "UserThreadCreate exception.\n");
-      do_UserThreadCreate(machine->ReadRegister(4),
+      int ret = do_UserThreadCreate(machine->ReadRegister(4),
                            machine->ReadRegister(5));
+      machine->WriteRegister(2,ret);
       break;
     }
     case SC_UserThreadExit: {

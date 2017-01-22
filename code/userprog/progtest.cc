@@ -34,7 +34,13 @@ StartProcess (char *filename)
       }
     space = new AddrSpace (executable);
     currentThread->space = space;
-
+//CHANGED TO ADD ID TO INITIAL THREAD
+   currentThread->Tid = space->giveTid();
+   currentThread->numberOfThread = space->bitmap->Find();
+   space->Addid(currentThread->Tid,currentThread->numberOfThread);
+   currentThread->space->semJoin[currentThread->numberOfThread].semaphore = new Semaphore ("Join Semaphore",0);
+   
+///
     delete executable;		// close file
 
     space->InitRegisters ();	// set the initial register values

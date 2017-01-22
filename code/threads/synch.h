@@ -89,7 +89,7 @@ class Lock
     const char *name;		// for debugging
     bool status;
     List *tqueue;
-    int Tid;
+    unsigned int Tid;
     int waiting;
     // plus some other stuff you'll need to define
 };

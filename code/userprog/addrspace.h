@@ -18,20 +18,20 @@
 // #include "synch.h"
 #include "bitmap.h"
 #include "synch.h"
+#include "thread.h"
 #define UserStackSize		1024	// increase this as necessary!
-#define NumberOfThreads     8
-
+#define NumberOfAreas     8
 /*typedef struct SemJoin {
    Semaphore *semaphore;
    int counter;
 } SemJoin;*/
 class Semaphore;
+class Thread;
 class SemJoin
 {
   public:
-//  SemJoin(int n);
- // ~SemJoin(); 
-  int counter;
+ // SemJoin(int n);
+  //~SemJoin(); 
   Semaphore *semaphore;
   
 };
@@ -49,22 +49,28 @@ class AddrSpace
 
     void SaveState ();		// Save/restore address space-specific
     void RestoreState ();	// info on a context switch 
-
+    int Findid(int id);  
+    void Addid(int id,int num);
+    void Removeid(int ThreadNum);
     void AddThread();
     void ExitThread();
     int GetNumOfThreads();
     bool isLast();
     int dothis();
-   
-
+    int giveTid();
+    Thread* InitUserThread(); 
     BitMap *bitmap;
     SemJoin *semJoin;
+    int GetPid();
   private:
       TranslationEntry * pageTable;	// Assume linear page table translation
     // for now!
     unsigned int numPages;	// Number of pages in the virtual 
     // address space
     unsigned int numOfThreads;  // number of threads within this address space
+    unsigned int Tid; 
+    int *idToBitmap;
+    unsigned int Pid;
 };
 
 #endif // ADDRSPACE_H
