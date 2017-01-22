@@ -19,7 +19,7 @@
 #include "synch.h"
 #include "filetable.h"
 //buffer size for copy string
-#define MAX_STRING_SIZE 30
+#define MAX_STRING_SIZE 1024
 #define NumPhysPages 512
 // Initialization and cleanup routines
 extern void Initialize (int argc, char **argv);	// Initialization,

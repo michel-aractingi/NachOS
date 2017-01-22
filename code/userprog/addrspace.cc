@@ -147,6 +147,7 @@ AddrSpace::AddrSpace (OpenFile * executable)
        for(i=0;i<UserStackSize/NumberOfAreas;i++){
            idToBitmap[i] = -1;  
 }
+    currentSector = 1;
 // zero out the entire address space, to zero the unitialized data segment 
 // and the stack segment
       bzero (machine->mainMemory, size);

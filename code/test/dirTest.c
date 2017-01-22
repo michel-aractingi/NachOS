@@ -4,7 +4,7 @@
 
 #include "syscall.h"
 
-#define N 100
+#define N 1024
 
 void
 createdir(char *name) {
@@ -52,7 +52,7 @@ create_and_open_file(char *name) {
 int main() {
     char buffer[N];
     OpenFileId in, out;
-    int  num_read;
+    int  num_read = 0;
 
     in = Open("input");
     if(in < 0) {

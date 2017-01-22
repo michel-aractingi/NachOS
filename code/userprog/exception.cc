@@ -203,6 +203,7 @@ ExceptionHandler(ExceptionType which)
             copyStringFromMachine(machine->ReadRegister(4),buff,MAX_STRING_SIZE);
             if(buff != NULL){
                 int size = machine->ReadRegister(5);
+
                 OpenFileId id = machine->ReadRegister(6);
                 if(id == ConsoleOutput){
                     synchconsole->SynchGetString(buff,MAX_STRING_SIZE);
@@ -214,6 +215,8 @@ ExceptionHandler(ExceptionType which)
                     int numRead = 0;
                     if(f!=NULL){
                         numRead = f->Read(buff,size);
+                        printf("%d : %d : %s\n",size,numRead,buff);
+
                     }
                     ioLock->Release();
                     copyStringToMachine(machine->ReadRegister(4),buff,numRead);
@@ -259,22 +262,27 @@ ExceptionHandler(ExceptionType which)
                     machine->WriteRegister(2,id);
                 }
             }
-            machine->WriteRegister(2,-1);
+            else {
+                machine->WriteRegister(2, -1);
+            }
             break;
         }
         case SC_Close:{
             OpenFileId id = machine->ReadRegister(4);
             currentThread->space->fileVector->Remove(id);
+            break;
         }
         case SC_MakeDirectory:{
             copyStringFromMachine(machine->ReadRegister(4),buff,MAX_STRING_SIZE);
+            //printf("Created from : %d\n", currentThread->space->currentSector);
             if(fileSystem->MakeDir(buff,0, currentThread->space->currentSector)){
                 machine->WriteRegister(2,1);
+
             }
             else{
                 machine->WriteRegister(2,-1);
             }
-
+            break;
         }
     default: {
       printf("Unexpected user mode exception %d %d\n", which, type);
