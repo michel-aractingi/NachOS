@@ -59,7 +59,7 @@
 extern void ThreadTest (void), Copy (const char *unixFile, const char *nachosFile);
 extern void Print (char *file), PerformanceTest (void), FileSystemShell(void);
 extern void StartProcess (char *file), ConsoleTest (char *in, char *out), SynchConsoleTest(char *in, char *out);
-extern void MailTest (int networkID);
+extern void MailTest (int networkID,int machineID);
 
 //----------------------------------------------------------------------
 // main
@@ -167,13 +167,14 @@ main (int argc, char **argv)
         }
 #endif // FILESYS
 #ifdef NETWORK
-	  if (!strcmp (*argv, "-o"))
+	  if (!strcmp (*argv, "-m"))
 	    {
 		ASSERT (argc > 1);
 		Delay (2);	// delay for 2 seconds
 		// to give the user time to 
 		// start up another nachos
-		MailTest (atoi (*(argv + 1)));
+		
+		MailTest (atoi (*(argv + 3)),atoi(*(argv+1)));
 		argCount = 2;
 	    }
 #endif // NETWORK

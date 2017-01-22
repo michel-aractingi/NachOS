@@ -3,7 +3,7 @@
 
 #include "copyright.h"
 #include "bitmap.h"
-
+#include "synch.h"
 class FrameProvider {
     public:
         FrameProvider (int n);
@@ -14,5 +14,6 @@ class FrameProvider {
         int NumAvailFrames();
     private:
         BitMap* bitmap;
+        Semaphore *frameSem;
 };
 #endif // FRAMEPROVIDER_H

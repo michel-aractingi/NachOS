@@ -129,7 +129,7 @@ Lock::Acquire ()
         currentThread->Sleep ();
 }
      status = true;
-     Tid = currentThread->numberOfThread;
+     Tid = currentThread->Tid;
      (void) interrupt->SetLevel(oldLevel);
      return;
 }
@@ -154,7 +154,7 @@ Lock::Release ()
 }
 bool
 Lock::isHeldByCurrentThread(){
-     return(Tid == currentThread->numberOfThread);
+     return(Tid == currentThread->Tid);
 }
 Condition::Condition (const char *debugName)
 {

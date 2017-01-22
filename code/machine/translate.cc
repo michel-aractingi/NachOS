@@ -243,8 +243,8 @@ Machine::Translate(int virtAddr, int* physAddr, int size, bool writing)
 	DEBUG('a', "%d mapped read-only at %d in TLB!\n", virtAddr, i);
 	return ReadOnlyException;
     }
-    pageFrame = entry->physicalPage;
-
+    pageFrame = entry->physicalPage;    
+ //   fprintf(stdout,"from translate pageframe %d\n",pageFrame);
     // if the pageFrame is too big, there is something really wrong! 
     // An invalid translation was loaded into the page table or TLB. 
     if (pageFrame >= NumPhysPages) { 

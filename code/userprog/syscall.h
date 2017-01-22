@@ -37,7 +37,8 @@
 #define SC_UserThreadCreate 16
 #define SC_UserThreadExit   17
 #define SC_UserThreadJoin   18
- #define SC_ForkExec   19
+#define SC_ForkExec   19
+#define SC_GetInt     20
 
 #ifdef IN_USER_MODE
 
@@ -144,6 +145,7 @@ char GetChar();
 void PutString (char *ch);
 void GetString (char *ch);
 void PutInt(int n);
+void GetInt(int* n);
 int  UserThreadCreate (void func (void *arg), void *arg);
 void UserThreadExit();
 void UserThreadJoin(int ThreadNum);

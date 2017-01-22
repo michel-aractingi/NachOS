@@ -1,11 +1,12 @@
 #include "syscall.h"
 
 int main()
-{
-  PutString("He");
-  ForkExec("./userpages0");
-    PutString("Here");
-  //ForkExec("./userpages2");
-  //for(int i=0;i<10000000;i++);
+
+{ // PutString("pass exec\n");
+  ForkExec("./userpages1");
+  PutString("pass exec 1\n");
+  //PutString("pass exec\n");
+  ForkExec("./putstring");
+  //PutString("pass exec 2\n");
   return 0;
 }

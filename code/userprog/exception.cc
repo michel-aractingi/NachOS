@@ -98,7 +98,7 @@ ExceptionHandler(ExceptionType which)
     switch (type) {
     case SC_Halt: {
       DEBUG('a', "Shutdown, initiated by user program.\n");
-      if (currentThread->space->GetNumOfThreads() == 0)
+//      if (currentThread->space->GetNumOfThreads() == 0 && childCount == 0)
         interrupt->Halt();
       break;
     }
@@ -118,12 +118,23 @@ ExceptionHandler(ExceptionType which)
     }
     case SC_Exit: {
       DEBUG('a', "Exit process terminated\n");
-        printf("called this: %d \n",machine->ReadRegister(4));
-      // TODO: check threads ONLY within process address space
-      if (currentThread->space->GetNumOfThreads() == 0)
-        Exit(machine->ReadRegister(4));
-      break;
+     exitLock->P();
+     if(currentThread->space->isLast())
+     {
+     if(machine->isLast()){
+          interrupt->Halt();
     }
+        machine->ExitThread();
+    }
+     currentThread->space->bitmap->Clear(currentThread->numberOfThread);
+     currentThread->space->Removeid(currentThread->numberOfThread);
+     currentThread->space->ExitThread(); 
+     exitLock->V();
+     currentThread->Finish();
+
+      break;
+
+ }
     case SC_GetChar: {
       DEBUG('a', "GetChar exception.\n");
       machine->WriteRegister(2,(int)synchconsole->SynchGetChar());
@@ -141,10 +152,24 @@ ExceptionHandler(ExceptionType which)
           synchconsole->SynchPutInt(value);
           break;
     }
+   
+     case SC_GetInt: {
+          DEBUG('a', "GetInt Exception\n");
+	  int a=0;
+	  int* n;
+          n=&a;
+	  synchconsole->SynchGetInt(n);
+	  //`fprintf(stdout,"buffe22r %d\n",*n);
+	  machine->WriteMem(machine->ReadRegister(4),sizeof(int), *n);
+        
+	break;
+    }
+
     case SC_UserThreadCreate: {
       DEBUG('a', "UserThreadCreate exception.\n");
-      do_UserThreadCreate(machine->ReadRegister(4),
+      int ret = do_UserThreadCreate(machine->ReadRegister(4),
                            machine->ReadRegister(5));
+      machine->WriteRegister(2,ret);
       break;
     }
     case SC_UserThreadExit: {
@@ -161,10 +186,9 @@ ExceptionHandler(ExceptionType which)
     case SC_ForkExec: {
       DEBUG('a', "ForkExec exception.\n");
       copyStringFromMachine(machine->ReadRegister(4),buff,MAX_STRING_SIZE);
-      //fprintf (stdout,"string copied %s\n",buff);
-        do_ForkExec(buff);
-        //machine->WriteRegister(2 , 12);
+      do_ForkExec(buff);
       break;
+
     }
     default: {
       printf("Unexpected user mode exception %d %d\n", which, type);

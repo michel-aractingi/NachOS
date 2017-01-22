@@ -82,4 +82,12 @@ void SynchConsole::SynchPutInt(int value) {
   delete [] buffer;
 }
 
+void SynchConsole::SynchGetInt(int* n) {
+  char * buffer = new char[MAX_STRING_SIZE];
+  synchconsole->SynchGetString(buffer, MAX_STRING_SIZE);
+  sscanf(buffer, "%d", n);
+  //fprintf(stdout,"buffer %d\n",*n);
+  delete [] buffer;
+}
+
 //#endif // CHANGED

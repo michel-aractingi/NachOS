@@ -46,8 +46,10 @@ SwapHeader (NoffHeader * noffH)
     noffH->uninitData.inFileAddr = WordToHost (noffH->uninitData.inFileAddr);
 }
 
-static Semaphore *threadsLock;
-
+static Semaphore *threadsLock;   //lock on numberofThreads
+static Semaphore *idLock1;       //lock on giveTid
+static Semaphore *idLock2;       //lock on idtobitmap
+static Semaphore *bit_lock;       //lock on init thread
 static void ReadAtVirtual(OpenFile *executable,
                           int virtualaddr,
                           int numBytes,
@@ -94,10 +96,17 @@ AddrSpace::AddrSpace (OpenFile * executable)
 {
     NoffHeader noffH;
     unsigned int i, size;
-    threadsLock = new Semaphore("lock threads", 1);
 
+    bit_lock = new Semaphore("Bit Lock Semaphore", 1);
+    threadsLock = new Semaphore("lock threads", 1);  
+    idLock1 = new Semaphore("lock on Tid",1);   
+    idLock2 = new Semaphore("lock on idtobitmap",1); 
+    numOfThreads = 0;   
+    Tid = 0;
+    Pid = machine->givePid();
     executable->ReadAt ((char *) &noffH, sizeof (noffH), 0);
 
+//    fprintf(stdout,"new proc %d\n",Pid);
     if ((noffH.noffMagic != NOFFMAGIC) &&
 	(WordToHost (noffH.noffMagic) == NOFFMAGIC))
 	SwapHeader (&noffH);
@@ -121,9 +130,9 @@ AddrSpace::AddrSpace (OpenFile * executable)
     for (i = 0; i < numPages; i++)
       {
 	  pageTable[i].virtualPage = i;	// for now, virtual page # = phys page #
-	  pageTable[i].physicalPage = PFN->GetEmptyFrame() ;
-          //bzero((void*) &machine->mainMemory[pageTable[i].physicalPage*PageSize ] , PageSize); // modified
-//fprintf(stdout,"i %d PFN Frame %d \n",i,pageTable[i].physicalPage);
+
+	  pageTable[i].physicalPage = PFN->GetEmptyFrame() ; 
+//fprintf(stdout,"from loop i %d PFN Frame %d \n",i,pageTable[i].physicalPage);
 	  pageTable[i].valid = TRUE;
 	  pageTable[i].use = FALSE;
 	  pageTable[i].dirty = FALSE;
@@ -131,9 +140,14 @@ AddrSpace::AddrSpace (OpenFile * executable)
 	  // a separate page, we could set its 
 	  // pages to be read-only
       }
-
-       bitmap  = new BitMap(UserStackSize/NumberOfThreads);
-       semJoin = new SemJoin[UserStackSize/NumberOfThreads];
+//fprintf(stdout,"numpages %d\n",numPages);
+       
+       bitmap  = new BitMap(UserStackSize/NumberOfAreas);
+       semJoin = new SemJoin[UserStackSize/NumberOfAreas];
+       idToBitmap = new  int [UserStackSize/NumberOfAreas];
+       for(i=0;i<UserStackSize/NumberOfAreas;i++){
+           idToBitmap[i] = -1;  
+}
 // zero out the entire address space, to zero the unitialized data segment 
 // and the stack segment
       bzero (machine->mainMemory, size);
@@ -176,6 +190,19 @@ AddrSpace::~AddrSpace ()
 {
   // LB: Missing [] for delete
   // delete pageTable;
+ /* if(isChild()){
+     this->RemoveChild();
+     Child = false;
+  }*/
+  delete bitmap;
+  //delete cond_join;
+  //delete lock_join;
+ unsigned int i; 
+   for (i = 0; i < numPages; i++)
+{
+     	PFN->ReleaseFrame(i);
+
+}
   delete [] pageTable;
   // End of modification
 }
@@ -224,8 +251,8 @@ AddrSpace::InitRegisters ()
 void
 AddrSpace::SaveState ()
 {
-    machine->pageTable = pageTable;
-    machine->pageTableSize = numPages;
+pageTable=machine->pageTable;
+numPages = machine->pageTableSize;
 
 }
 
@@ -260,3 +287,55 @@ int AddrSpace::GetNumOfThreads() {
   return numOfThreads;
 }
 
+bool AddrSpace::isLast(){
+  bool stat = false;
+  threadsLock->P();
+  if(this->GetNumOfThreads()==0) stat = true;
+  threadsLock->V();
+  return stat;
+}
+int AddrSpace::giveTid(){
+  idLock1->P();
+  int a = Tid++;
+  idLock1->V();
+  return a;
+}
+int AddrSpace::Findid(int id){
+    int i;
+    int a = -1;
+    idLock2->P();
+    for (i = 0 ; i < UserStackSize/NumberOfAreas ; i++){
+    if(idToBitmap[i]==id){a =i; break;}
+}
+    idLock2->V();
+    return a;
+}
+void AddrSpace::Addid(int id,int num){
+    idLock2->P();
+    idToBitmap[num]=id;
+    //fprintf(stdout,"added id %d at %d \n",idToBitmap[num],num);
+    idLock2->V();
+    
+}
+void AddrSpace::Removeid(int ThreadNum){
+    idLock2->P();
+    idToBitmap[ThreadNum] = -1;
+    idLock2->V();
+}
+Thread* AddrSpace::InitUserThread(){
+  Thread* newThread = new Thread("user_thread");
+  newThread->space = currentThread->space;
+  bit_lock->P();
+  newThread->numberOfThread = newThread->space->bitmap->Find();
+  if((int)newThread->numberOfThread == -1) return NULL;
+  newThread->space->semJoin[newThread->numberOfThread].semaphore = new Semaphore ("Join Semaphore",0);
+  newThread->space->AddThread();
+  newThread->Tid = newThread->space->giveTid();
+  newThread->space->Addid(newThread->Tid,newThread->numberOfThread);
+  bit_lock->V();
+  return newThread;
+
+}
+int AddrSpace::GetPid(){
+return Pid;
+}

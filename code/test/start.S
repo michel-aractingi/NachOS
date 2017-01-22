@@ -113,6 +113,14 @@ PutInt:
 	j    $31
 	.end PutInt
 
+        .globl GetInt
+        .ent    GetInt
+GetInt:
+        addiu $2,$0,SC_GetInt
+        syscall
+        j    $31
+        .end GetInt
+
 	.globl Exit
 	.ent	Exit
 Exit:

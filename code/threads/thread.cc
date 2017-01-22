@@ -19,7 +19,7 @@
 #include "switch.h"
 #include "synch.h"
 #include "system.h"
-
+#include "machine.h"
 #define STACK_FENCEPOST 0xdeadbeef	// this is put at the top of the
 					// execution stack, for detecting 
 					// stack overflows
@@ -105,8 +105,9 @@ Thread::Fork (VoidFunctionPtr func, int arg)
     // an already running program, as in the "fork" Unix system call. 
     
     // LB: Observe that currentThread->space may be NULL at that time.
+    if(this->space == NULL){
     this->space = currentThread->space;
-
+}
 #endif // USER_PROGRAM
 
     IntStatus oldLevel = interrupt->SetLevel (IntOff);
