@@ -194,3 +194,80 @@ PerformanceTest()
     }
     stats->Print();
 }
+
+void ParseArguments(char *buffer, const char s[], int *number_of_arguments, char **tokens){
+
+    char *token;
+    token = strtok(buffer, s);
+    tokens[0] = token;
+    int counter = 1;
+    while( tokens != NULL )
+    {
+        token = strtok(NULL, s);
+        if(token != NULL) {
+            tokens[counter++] = token;
+        }
+        else{
+            break;
+        }
+    }
+    *number_of_arguments = counter;
+}
+
+void PrintArguments(char **arguments, int number_of_arguments){
+    for(int i=0;i< number_of_arguments;i++){
+        printf("%d : %s\n",i,arguments[i]);
+    }
+}
+
+void FileSystemShell(){
+
+    char buffer[160];
+    const char s[5] = " \n";
+    char *arguments[80];
+    int number_of_arguments = 0;
+    int sector = 1;
+    while(1){
+        printf("Shell > ");
+        if (fgets(buffer, 80 , stdin) == NULL) break;
+        ParseArguments(buffer, s, &number_of_arguments,arguments);
+        if(!strcmp(arguments[0], "ls" )){
+            fileSystem->List();
+        }
+        else if(!strcmp(arguments[0], "cd")){
+
+            fileSystem->ChangeDir(arguments[1],sector);
+        }
+        else if(!strcmp(arguments[0], "cp")){
+            Copy(arguments[1],arguments[2]);
+        }
+        else if(!strcmp(arguments[0], "rm")){
+            fileSystem->Remove(arguments[1]);
+        }
+        else if(!strcmp(arguments[0], "mkdir")){
+            fileSystem->MakeDirectory(arguments[1],0,1);
+        }
+        else if(!strcmp(arguments[0], "p")){
+            fileSystem->Print();
+        }
+        else if(!strcmp(arguments[0], "pwd")){
+            fileSystem->WorkingDirectory();
+        }
+        else if(!strcmp(arguments[0], "gs")){
+            int data = (int) arguments[1][0] - 48;
+            fileSystem->GoToSector(data);
+        }
+        else if(!strcmp(arguments[0], "pd")){
+            int data = (int) arguments[1][0] - 48;
+
+            fileSystem->List(data);
+        }
+        else if(!strcmp(arguments[0], "ud")){
+            int data = (int) arguments[1][0] - 48;
+            fileSystem->UpdateDirectory(data);
+        }
+        else{
+            printf("Invalid Command%s1",arguments[0]);
+        }
+    }
+}
