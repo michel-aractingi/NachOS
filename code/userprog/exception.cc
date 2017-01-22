@@ -190,6 +190,92 @@ ExceptionHandler(ExceptionType which)
       break;
 
     }
+        case SC_Create:{
+            copyStringFromMachine(machine->ReadRegister(4),buff,MAX_STRING_SIZE);
+            if(buff == NULL){
+                break;
+            }
+            fileSystem->Create(buff,0,currentThread->space->currentSector);
+            break;
+        }
+        case SC_Read:{
+
+            copyStringFromMachine(machine->ReadRegister(4),buff,MAX_STRING_SIZE);
+            if(buff != NULL){
+                int size = machine->ReadRegister(5);
+                OpenFileId id = machine->ReadRegister(6);
+                if(id == ConsoleOutput){
+                    synchconsole->SynchGetString(buff,MAX_STRING_SIZE);
+                    copyStringToMachine (machine->ReadRegister(4),buff,MAX_STRING_SIZE);
+                }
+                else{
+                    ioLock->Acquire();
+                    OpenFile *f = currentThread->space->fileVector->Resolve(id);
+                    int numRead = 0;
+                    if(f!=NULL){
+                        numRead = f->Read(buff,size);
+                    }
+                    ioLock->Release();
+                    copyStringToMachine(machine->ReadRegister(4),buff,numRead);
+                    machine->WriteRegister(2,numRead);
+                }
+            }
+            break;
+
+        }
+        case SC_Write:{
+            copyStringFromMachine(machine->ReadRegister(4),buff,MAX_STRING_SIZE);
+            if(buff != NULL){
+                int size = machine->ReadRegister(5);
+                OpenFileId id = machine->ReadRegister(6);
+                if(id == ConsoleOutput){
+                    synchconsole->SynchPutString(buff);
+                }
+                else{
+                    ioLock->Acquire();
+                    OpenFile *f = currentThread->space->fileVector->Resolve(id);
+                    if(f!=NULL){
+                        f->Write(buff,size);
+                    }
+                    ioLock->Release();
+                }
+
+            }
+            break;
+        }
+        case SC_ChangeDirectory:{
+            copyStringFromMachine(machine->ReadRegister(4),buff,MAX_STRING_SIZE);
+            int sector = fileSystem->ChangeDir(buff,currentThread->space->currentSector);
+            currentThread->space->currentSector = sector;
+            machine->WriteRegister(2,sector);
+            break;
+        }
+        case SC_Open:{
+            copyStringFromMachine(machine->ReadRegister(4),buff,MAX_STRING_SIZE);
+            if(buff != NULL){
+                OpenFile *f = fileSystem->Open(buff,currentThread->space->currentSector);
+                if(f != NULL){
+                    OpenFileId id = currentThread->space->fileVector->Insert(f);
+                    machine->WriteRegister(2,id);
+                }
+            }
+            machine->WriteRegister(2,-1);
+            break;
+        }
+        case SC_Close:{
+            OpenFileId id = machine->ReadRegister(4);
+            currentThread->space->fileVector->Remove(id);
+        }
+        case SC_MakeDirectory:{
+            copyStringFromMachine(machine->ReadRegister(4),buff,MAX_STRING_SIZE);
+            if(fileSystem->MakeDir(buff,0, currentThread->space->currentSector)){
+                machine->WriteRegister(2,1);
+            }
+            else{
+                machine->WriteRegister(2,-1);
+            }
+
+        }
     default: {
       printf("Unexpected user mode exception %d %d\n", which, type);
       ASSERT(FALSE);
