@@ -5,34 +5,6 @@
 #include "openfile.h"
 #include <new>
 
-#ifdef FILESYS_STUB 		// Temporarily implement file system calls as
-// calls to UNIX, until the real file system
-				// implementation is available
-class FileSystem {
-  public:
-    FileSystem(bool) {}
-
-    bool Create(char *name, int) {
-	int fileDescriptor = OpenForWrite(name);
-
-	if (fileDescriptor == -1) return false;
-	Close(fileDescriptor);
-	return true;
-	}
-
-    OpenFile* Open(char *name) {
-	  int fileDescriptor = OpenForReadWrite(name, false);
-
-	  if (fileDescriptor == -1) return NULL;
-	  return new(std::nothrow) OpenFile(fileDescriptor);
-      }
-
-    bool Remove(char *name) { return Unlink(name) == 0; }
-
-};
-
-#else // FILESYS
-
 // these variables are no longer apart of the FileSystem class because of
 // needed changes to make extendable files work
 extern OpenFile* freeMapFile;   // Bit map of free disk blocks,
@@ -68,7 +40,5 @@ public:
     void Print();			// List all the files and their contents
 
 };
-
-#endif // FILESYS
 
 #endif // FS_H

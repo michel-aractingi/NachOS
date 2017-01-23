@@ -17,7 +17,8 @@
 #include "timer.h"
 #include "../userprog/frameprovider.h"
 #include "synch.h"
-#include "filetable.h"
+#include "../userprog/filetable.h"
+
 //buffer size for copy string
 #define MAX_STRING_SIZE 1024
 #define NumPhysPages 512

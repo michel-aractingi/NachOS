@@ -1,7 +1,8 @@
+#include "system.h"
 #include "copyright.h"
 #include "filehdr.h"
 #include "openfile.h"
-#include "system.h"
+
 #include <new>
 
 //----------------------------------------------------------------------

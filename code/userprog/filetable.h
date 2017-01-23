@@ -22,9 +22,9 @@
 //
 
 #include "syscall.h"
-#include "openfile.h"
+#include "../filesys/openfile.h"
 #include <new>
-#define MAX_OPEN_FILE_ID 100 // defines the max number of OpenFileId's a process can have
+#define MAX_OPEN_FILE_ID 10 // defines the max number of OpenFileId's a process can have
 #define FREE_SPACE -1
 typedef int OpenFileId;
 #define ConsoleInput	0

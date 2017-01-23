@@ -15,6 +15,8 @@
 #include "synch.h"
 #include "synchconsole.h"
 #include "filetable.h"
+#include "filesys.h"
+class FileSystem;
 //----------------------------------------------------------------------
 // StartProcess
 //      Run a user program.  Open the executable, load it into

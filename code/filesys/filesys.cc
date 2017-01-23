@@ -44,13 +44,13 @@
 // of liability and disclaimer of warranty provisions.
 
 #include "copyright.h"
-
+#include "system.h"
 #include "disk.h"
 #include "bitmap.h"
 #include "directory.h"
 #include "filehdr.h"
 #include "filesys.h"
-#include "system.h"
+
 #include <string>
 #include <new>
 

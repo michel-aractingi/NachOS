@@ -1,6 +1,6 @@
-#include "filetable.h"
-#include "system.h"
 
+#include "system.h"
+#include "filetable.h"
 //-----------------------------------------------------------
 // TableEntry::TableEntry()
 //	create a new TableEntry object. Stores a reference to the
