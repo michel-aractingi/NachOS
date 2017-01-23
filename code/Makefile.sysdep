@@ -32,14 +32,29 @@ MIPS_CC=$(firstword $(wildcard \
 	$(GCCDIR)/gcc \
 	/usr/bin/mipsel-linux-gnu-gcc \
 	/opt/NACHOS/nachos_gcc/cross/decstation-ultrix/bin))
+###############################################
+# Nachos requires a very basic compilation mode
+###############################################
+# generate MIPS1 instructions only, with basic floating point operations
+NACHOS_MIPS_FLAGS += -mips1 -mfp32
+# use plain function calls
+NACHOS_MIPS_FLAGS += -mno-abicalls
+# do not generate symbol to relocate at runtime (one option for the compiler, the other for the linker...)
+NACHOS_MIPS_FLAGS += --no-pie -no-pie
+# do not expect to be linked with the gcc library
+NACHOS_MIPS_FLAGS += -fno-builtin
+# disable stack protection where enabled by default (else some symbols will be missing)
+NACHOS_MIPS_FLAGS += -fno-stack-protector
+# do not use small data/bss sections
+NACHOS_MIPS_FLAGS += -G 0
+###############################################
+
 # do not use standard include paths when cross-compiling nachos user programs
 MIPS_CPPFLAGS += -nostdinc
-# generate MIPS1 instructions only, use plain function calls, and do not use
-# small data/bss sections
-MIPS_CFLAGS += -mips1 -mno-abicalls -G 0 -fno-builtin -mfp32
-MIPS_ASFLAGS += -mips1 -mno-abicalls -G 0 -mfp32
+MIPS_CFLAGS += $(NACHOS_MIPS_FLAGS)
+MIPS_ASFLAGS += $(NACHOS_MIPS_FLAGS)
 # do not link with standard libraries (libc) when creating nachos user programs
-MIPS_LDFLAGS += -nostdlib
+MIPS_LDFLAGS += -nostdlib $(NACHOS_MIPS_FLAGS)
 # -lgcc will perhaps be required with a recent gcc (not on small provided
 # examples of Nachos user programs)
 MIPS_LDLIBS += 
