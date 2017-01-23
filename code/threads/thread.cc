@@ -97,6 +97,7 @@ Thread::Fork (VoidFunctionPtr func, int arg)
 
     StackAllocate (func, arg);
 
+
 #ifdef USER_PROGRAM
 
     // LB: The addrspace should be tramsitted here, instead of later in
@@ -111,9 +112,11 @@ Thread::Fork (VoidFunctionPtr func, int arg)
 #endif // USER_PROGRAM
 
     IntStatus oldLevel = interrupt->SetLevel (IntOff);
+
     scheduler->ReadyToRun (this);	// ReadyToRun assumes that interrupts 
     // are disabled!
     (void) interrupt->SetLevel (oldLevel);
+
 }
 
 //----------------------------------------------------------------------

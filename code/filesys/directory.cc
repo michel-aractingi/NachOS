@@ -172,8 +172,8 @@ Directory::Add(char *name, int newSector)
         }
     }
 
-    ASSERT(false);  // should not happen
-    return false;	// no space.  Fix when we have extensible files.
+    ASSERT(false);
+    return false;
 }
 
 bool
@@ -201,8 +201,8 @@ Directory::AddDirectory(char *name, int newSector) {
         }
     }
 
-    ASSERT(false);  // should not happen
-    return false;   // no space.  Fix when we have extensible files.
+    ASSERT(false);
+    return false;
 }
 
 //----------------------------------------------------------------------

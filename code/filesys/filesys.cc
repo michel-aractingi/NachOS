@@ -54,8 +54,6 @@
 #include <string>
 #include <new>
 
-#define VM_FILE_SIZE (1024 * 50) + 100
-
 // Sectors containing the file headers for the bitmap of free sectors,
 // and the directory of files.  These file headers are placed in well-known
 // sectors, so that they can be located on boot-up.
@@ -177,21 +175,6 @@ FileSystem::FileSystem(bool format)
         directoryFile = new(std::nothrow) OpenFile(DirectorySector);
     }
 
-
-    char temp[15];
-    temp[0] = 'V';
-    temp[1] = 'M';
-    temp[2] = '\0';
-    Remove(temp, DirectorySector);
-    if(!Create(temp, VM_FILE_SIZE, DirectorySector)) {
-        fprintf(stderr, "error: failed to create VM file\n");
-        return;
-    }
-    vmFile = Open(temp, DirectorySector);
-    if(vmFile == NULL) {
-        fprintf(stderr, "error: failed to open VM file\n");
-        return;
-    }
 }
 
 //----------------------------------------------------------------------
@@ -243,8 +226,8 @@ FileSystem::Create(char *name, int initialSize, int wdSector)
     }
 
 
-    directory = new(std::nothrow) Directory(NumDirEntries);
-    OpenFile *dirFile = new(std::nothrow) OpenFile(wdSector);
+    directory = new Directory(NumDirEntries);
+    OpenFile *dirFile = new OpenFile(wdSector);
     directory->FetchFrom(dirFile);
 
     if (directory->Find(name) != -1)
@@ -398,7 +381,7 @@ FileSystem::ChangeDir(char *name, int wdSector) {
 OpenFile *
 FileSystem::Open(char *name, int wdSector)
 {
-    Directory *directory = new(std::nothrow) Directory(NumDirEntries);
+    Directory *directory = new Directory(NumDirEntries);
     OpenFile *openFile = NULL;
     int sector;
 

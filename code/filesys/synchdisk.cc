@@ -1,5 +1,5 @@
 // synchdisk.cc
-//	Routines to synchronously access the disk.  The physical disk 
+//	Routines to synchronously access the disk.  The physical disk
 //	is an asynchronous device (disk requests return immediately, and
 //	an interrupt happens later on).  This is a layer on top of
 //	the disk providing a synchronous interface (requests wait until
@@ -11,7 +11,7 @@
 //	exclusion.
 //
 // Copyright (c) 1992-1993 The Regents of the University of California.
-// All rights reserved.  See copyright.h for copyright notice and limitation 
+// All rights reserved.  See copyright.h for copyright notice and limitation
 // of liability and disclaimer of warranty provisions.
 
 #include "copyright.h"
@@ -25,7 +25,7 @@ void SectorCopy(char *dst, char *src) {
 
 //----------------------------------------------------------------------
 // DiskRequestDone
-// 	Disk interrupt handler.  Need this to be a C routine, because 
+// 	Disk interrupt handler.  Need this to be a C routine, because
 //	C++ can't handle pointers to member functions.
 //----------------------------------------------------------------------
 
@@ -50,7 +50,6 @@ SynchDisk::SynchDisk(char* name)
 {
     semaphore = new(std::nothrow) Semaphore("synch disk", 0);
     lock = new(std::nothrow) Lock("synch disk lock");
-    cacheLock = new(std::nothrow) Lock("cacheLock");
     disk = new(std::nothrow) Disk(name, DiskRequestDone, (int) this);
 }
 
@@ -80,20 +79,9 @@ void
 SynchDisk::ReadSector(int sectorNumber, char* data)
 {
     lock->Acquire();			// only one disk I/O at a time
-    cacheLock->Acquire();
-    if(cache.inCache(sectorNumber)) {
-        SectorCopy(data, cache.Get(sectorNumber));
-        cacheLock->Release();
-        lock->Release();
-        return ;
-    }
-    cacheLock->Release();
 
     disk->ReadRequest(sectorNumber, data);
     semaphore->P();			// wait for interrupt
-    cacheLock->Acquire();
-    cache.Add(data, sectorNumber);
-    cacheLock->Release();
 
     lock->Release();
 }
@@ -112,17 +100,8 @@ SynchDisk::WriteSector(int sectorNumber, char* data)
 {
 
     lock->Acquire();			// only one disk I/O at a time
-    // cacheLock->Acquire();
-    // cache.Delete(sectorNumber);
-    // cacheLock->Release();
     disk->WriteRequest(sectorNumber, data);
     semaphore->P();			// wait for interrupt
-
-    cacheLock->Acquire();
-    cache.Delete(sectorNumber);
-    cache.Add(data, sectorNumber);
-    cacheLock->Release();
-
     lock->Release();
 }
 
@@ -134,6 +113,6 @@ SynchDisk::WriteSector(int sectorNumber, char* data)
 
 void
 SynchDisk::RequestDone()
-{ 
+{
     semaphore->V();
 }

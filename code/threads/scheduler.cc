@@ -55,6 +55,7 @@ Scheduler::ReadyToRun (Thread * thread)
 {
     DEBUG ('t', "Putting thread %s on ready list.\n", thread->getName ());
 
+
     thread->setStatus (READY);
     readyList->Append ((void *) thread);
 }
@@ -112,7 +113,7 @@ Scheduler::Run (Thread * nextThread)
 
     DEBUG ('t', "Switching from thread \"%s\" to thread \"%s\"\n",
 	   oldThread->getName (), nextThread->getName ());
-
+    //printf("%s\t%s\n",oldThread->getName(),nextThread->getName());
     // This is a machine-dependent assembly language routine defined 
     // in switch.s.  You may have to think
     // a bit to figure out what happens after this, both from the point

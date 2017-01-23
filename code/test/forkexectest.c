@@ -3,6 +3,7 @@
 int main()
 
 { // PutString("pass exec\n");
+  PutString("Trying\n");
   ForkExec("./userpages1");
   PutString("pass exec 1\n");
   //PutString("pass exec\n");

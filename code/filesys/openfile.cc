@@ -14,10 +14,10 @@
 
 OpenFile::OpenFile(int sector)
 {
-    hdr = new(std::nothrow) FileHeader();
+    hdr = new FileHeader();
     hdr->FetchFrom(sector);
-    seekPosition = 0;
     hdrSector = sector;
+    seekPosition = 0;
 }
 
 //----------------------------------------------------------------------
@@ -137,7 +137,7 @@ OpenFile::ReadAt(char *into, int numBytes, int position)
     numSectors = 1 + lastSector - firstSector;
 
     // read in all the full and partial sectors that we need
-    buf = new(std::nothrow) char[numSectors * SectorSize];
+    buf = new char[numSectors * SectorSize];
     for (i = firstSector; i <= lastSector; i++)	{
         int s = hdr->ByteToSector(i * SectorSize);
         ASSERT(s >= 0 && s < NumSectors);

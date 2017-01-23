@@ -60,6 +60,7 @@ void do_UserThreadJoin( int id){
 
 void createProc(int lol) {
   // for (int i=0; i>lol; i++) {}
+
   currentThread->space->RestoreState();
   currentThread->space->InitRegisters();
 
@@ -69,20 +70,32 @@ void createProc(int lol) {
 
 void do_ForkExec(char *f) {
 
-  OpenFile* exec = fileSystem->Open (f,1);
+
+  OpenFile* exec = fileSystem->Open(f,currentThread->space->currentSector);
+    if(exec == NULL){
+        printf("Not Found %s\n",f);
+    }
   //fprintf(stdout,"reached\n"); 
   AddrSpace* space = new AddrSpace (exec);
+    FileVector *vector = new(std::nothrow) FileVector();
+    space->fileVector = vector;
   Thread* proc = new Thread(f);
+
   machine->forklock->P();
   proc->space = space;
   proc->Tid = proc->space->giveTid();
   proc->numberOfThread = proc->space->bitmap->Find();
   proc->space->Addid(proc->Tid,proc->numberOfThread);
   proc->space->semJoin[proc->numberOfThread].semaphore = new Semaphore ("Join Semaphore",0);
+
   machine->AddThread();
+
   machine->forklock->V();
+
   //space->setChild();
   //space->AddChild();
+  printf("Here : %d\n",proc->Tid);
   proc->Fork(createProc, 0);
+  scheduler->Print();
   //proc->space->AddThread();
 }
