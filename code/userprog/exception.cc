@@ -25,10 +25,6 @@
 #include "system.h"
 #include "syscall.h"
 #include "userthread.h"
-#include "filesys.h"
-#include "filetable.h"
-class FileSystem;
-
 //----------------------------------------------------------------------
 // UpdatePC : Increments the Program Counter register in order to resume
 // the user program immediately after the "syscall" instruction.
@@ -74,11 +70,7 @@ copyStringFromMachine ( int from , char *to  , int size){
 	for(i=0;i<size;i++)
 	{
 		
-	    if(!machine->ReadMem(from + i, 1 , &ch))
-        {
-            fprintf(stdout,"error");
-        }
-
+	if(!machine->ReadMem(from + i, 1 , &ch)){fprintf(stdout,"error");}
 		to[i] = (char) ch;
 		//fprintf(stdout,"%d\n",ch);
 	}
@@ -127,19 +119,18 @@ ExceptionHandler(ExceptionType which)
       DEBUG('a', "Exit process terminated\n");
      exitLock->P();
      if(currentThread->space->isLast())
-{
+     {
      if(machine->isLast()){
           interrupt->Halt();
-}
+    }
         machine->ExitThread();
-}
+    }
      currentThread->space->bitmap->Clear(currentThread->numberOfThread);
      currentThread->space->Removeid(currentThread->numberOfThread);
      currentThread->space->ExitThread(); 
      exitLock->V();
      currentThread->Finish();
- 
-        //Exit(machine->ReadRegister(4));
+
       break;
 
  }
@@ -194,18 +185,17 @@ ExceptionHandler(ExceptionType which)
     case SC_ForkExec: {
       DEBUG('a', "ForkExec exception.\n");
       copyStringFromMachine(machine->ReadRegister(4),buff,MAX_STRING_SIZE);
-      //fprintf (stdout,"string copied\n");
       do_ForkExec(buff);
       break;
+
     }
         case SC_Create:{
             copyStringFromMachine(machine->ReadRegister(4),buff,MAX_STRING_SIZE);
             if(buff == NULL){
                 break;
             }
-            printf("%s\n",buff);
-            fileSystem->Create(buff,0,currentThread->workingDirectory);
-
+            fileSystem->Create(buff,0,currentThread->currentSector);
+            break;
         }
         case SC_Read:{
 
@@ -257,36 +247,40 @@ ExceptionHandler(ExceptionType which)
         }
         case SC_ChangeDirectory:{
             copyStringFromMachine(machine->ReadRegister(4),buff,MAX_STRING_SIZE);
-            printf("%s : %d",buff,currentThread->workingDirectory);
-            int sector = fileSystem->ChangeDirectory(buff,currentThread->workingDirectory);
-            currentThread->workingDirectory = sector;
+            int sector = fileSystem->ChangeDirectory(buff,currentThread->currentSector);
+            currentThread->currentSector = sector;
             machine->WriteRegister(2,sector);
             break;
         }
         case SC_Open:{
             copyStringFromMachine(machine->ReadRegister(4),buff,MAX_STRING_SIZE);
+
             if(buff != NULL){
-                OpenFile *f = fileSystem->Open(buff,currentThread->workingDirectory);
+                OpenFile *f = fileSystem->Open(buff,currentThread->currentSector);
                 if(f != NULL){
                     OpenFileId id = currentThread->fileVector->Insert(f);
+                    printf("Opened File %s : %d\n",buff,id);
                     machine->WriteRegister(2,id);
                 }
             }
             else {
                 machine->WriteRegister(2, -1);
             }
+
             break;
         }
         case SC_Close:{
             OpenFileId id = machine->ReadRegister(4);
             currentThread->fileVector->Remove(id);
+            printf("Closed File : %d\n",id);
             break;
         }
         case SC_MakeDirectory:{
             copyStringFromMachine(machine->ReadRegister(4),buff,MAX_STRING_SIZE);
             //printf("Created from : %d\n", currentThread->space->currentSector);
-            if(fileSystem->MakeDirectory(buff,0, currentThread->workingDirectory)){
+            if(fileSystem->MakeDirectory(buff,0, currentThread->currentSector)){
                 machine->WriteRegister(2,1);
+
             }
             else{
                 machine->WriteRegister(2,-1);
@@ -303,4 +297,3 @@ ExceptionHandler(ExceptionType which)
  
   UpdatePC();
 }
-

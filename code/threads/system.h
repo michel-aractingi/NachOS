@@ -17,9 +17,10 @@
 #include "timer.h"
 #include "../userprog/frameprovider.h"
 #include "synch.h"
-#include "filetable.h"
-#include "filesys.h"
+#include "../userprog/filetable.h"
 
+#include <new>
+class OpenFileTable;
 //buffer size for copy string
 #define MAX_STRING_SIZE 1024
 #define NumPhysPages 512
@@ -29,6 +30,7 @@ extern void Initialize (int argc, char **argv);	// Initialization,
 extern void Cleanup ();		// Cleanup, called when
 						// Nachos is done.
 extern Semaphore *exitLock;
+extern OpenFileTable *globalFileTable;
 extern Thread *currentThread;	// the thread holding the CPU
 extern Thread *threadToBeDestroyed;	// the thread that just finished
 extern Scheduler *scheduler;	// the ready list
@@ -36,9 +38,6 @@ extern Interrupt *interrupt;	// interrupt status
 extern Statistics *stats;	// performance metrics
 extern Timer *timer;		// the hardware alarm clock
                                   // number of child processes
-
-extern Lock *ioLock;               // lock for making Read/Write atomic
-extern OpenFileTable *globalFileTable;
 #ifdef USER_PROGRAM
 #include "machine.h"
 #include "synchconsole.h"
@@ -46,6 +45,7 @@ class FrameProvider;
 extern FrameProvider *PFN;
 extern Machine *machine;	// user program memory and registers
 extern SynchConsole *synchconsole;
+extern Lock *ioLock;               // lock for making Read/Write atomic
 
 #endif
 
@@ -56,7 +56,18 @@ extern FileSystem *fileSystem;
 
 #ifdef FILESYS
 #include "synchdisk.h"
-extern SynchDisk *synchDisk;
+#include "bitmap.h"
+extern SynchDisk   *synchDisk;
+extern Lock *directoryLock;
+extern Lock *diskmapLock;
+extern Lock *diskLock;
+extern OpenFile *vmFile;
+
+extern BitMap *diskMap;			// bitmap for allocating disk sectors
+// extern SynchDisk *vmDisk;	// our disk for secondary storage
+extern AddrSpace *reversePageTable[];
+extern Lock *memLock;
+
 #endif
 
 #ifdef NETWORK

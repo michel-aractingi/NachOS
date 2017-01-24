@@ -96,6 +96,7 @@ AddrSpace::AddrSpace (OpenFile * executable)
 {
     NoffHeader noffH;
     unsigned int i, size;
+
     bit_lock = new Semaphore("Bit Lock Semaphore", 1);
     threadsLock = new Semaphore("lock threads", 1);  
     idLock1 = new Semaphore("lock on Tid",1);   
@@ -104,7 +105,6 @@ AddrSpace::AddrSpace (OpenFile * executable)
     Tid = 0;
     Pid = machine->givePid();
     executable->ReadAt ((char *) &noffH, sizeof (noffH), 0);
-
 //    fprintf(stdout,"new proc %d\n",Pid);
     if ((noffH.noffMagic != NOFFMAGIC) &&
 	(WordToHost (noffH.noffMagic) == NOFFMAGIC))
@@ -129,6 +129,7 @@ AddrSpace::AddrSpace (OpenFile * executable)
     for (i = 0; i < numPages; i++)
       {
 	  pageTable[i].virtualPage = i;	// for now, virtual page # = phys page #
+
 	  pageTable[i].physicalPage = PFN->GetEmptyFrame() ; 
 //fprintf(stdout,"from loop i %d PFN Frame %d \n",i,pageTable[i].physicalPage);
 	  pageTable[i].valid = TRUE;
@@ -143,12 +144,12 @@ AddrSpace::AddrSpace (OpenFile * executable)
        bitmap  = new BitMap(UserStackSize/NumberOfAreas);
        semJoin = new SemJoin[UserStackSize/NumberOfAreas];
        idToBitmap = new  int [UserStackSize/NumberOfAreas];
-       for(i=0;i<UserStackSize/NumberOfAreas;i++){
-           idToBitmap[i] = -1;  
-}
+       for(i=0;i<UserStackSize/NumberOfAreas;i++) {
+           idToBitmap[i] = -1;
+       }
 // zero out the entire address space, to zero the unitialized data segment 
 // and the stack segment
-    //bzero (&machine->mainMemory[pageTable[0].physicalPage], PageSize*numPages);//size);
+      //bzero (machine->mainMemory, size);
 
 // then, copy in the code and data segments into memory
     if (noffH.code.size > 0)

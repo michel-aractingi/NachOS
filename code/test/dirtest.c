@@ -62,9 +62,7 @@ int main() {
     }
 
     createdir("hello");
-    changedir("hello");
     createdir("hello/world");
-    changedir("hello/world");
     createdir("hello/world/foo");
     changedir("hello/world/foo");
     out = create_and_open_file("bar");

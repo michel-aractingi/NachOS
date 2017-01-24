@@ -10,7 +10,7 @@
 // This defines *all* of the global data structures used by Nachos.
 // These are all initialized and de-allocated by this file.
 
-
+class OpenFileTable;
 Thread *currentThread;		// the thread we are running now
 Thread *threadToBeDestroyed;	// the thread that just finished
 Scheduler *scheduler;		// the ready list
@@ -20,7 +20,6 @@ Statistics *stats;		// performance metrics
 Timer *timer;			// the hardware timer device,
 				// for invoking context switches
 Semaphore *exitLock;
-Lock *ioLock;               // lock for making Read/Write atomic
 OpenFileTable *globalFileTable;
 #ifdef FILESYS_NEEDED
 FileSystem *fileSystem;
@@ -28,11 +27,21 @@ FileSystem *fileSystem;
 
 #ifdef FILESYS
 SynchDisk *synchDisk;
+Lock *directoryLock;
+Lock *diskmapLock;
+Lock *diskLock;
+OpenFile *vmFile;
+BitMap *diskMap;			// bitmap for allocating disk sectors
+// extern SynchDisk *vmDisk;	// our disk for secondary storage
+AddrSpace *reversePageTable[NumPhysPages];
+Lock *memLock;
 #endif
 
 #ifdef USER_PROGRAM		// requires either FILESYS or FILESYS_STUB
 Machine *machine;		// user program memory and registers
 SynchConsole *synchconsole;
+Lock *ioLock;               // lock for making Read/Write atomic
+
 #endif
 
 #ifdef NETWORK
@@ -148,10 +157,9 @@ Initialize (int argc, char **argv)
     scheduler = new Scheduler ();	// initialize the ready queue
     if (randomYield)		// start the timer (if needed)
 	timer = new Timer (TimerInterruptHandler, 0, randomYield);
-	ioLock = new Lock("IO Lock");               // lock for making Read/Write atomic
-	globalFileTable = new OpenFileTable();
-    threadToBeDestroyed = NULL;
 
+    threadToBeDestroyed = NULL;
+    globalFileTable = new(std::nothrow) OpenFileTable();
     // We didn't explicitly allocate the current thread we are running in.
     // But if it ever tries to give up the CPU, we better have a Thread
     // object to save its state. 
@@ -164,10 +172,23 @@ Initialize (int argc, char **argv)
     machine = new Machine (debugUserProg);	// this must come first
     synchconsole = new SynchConsole(NULL,NULL);
     PFN = new FrameProvider(NumPhysPages);
+	ioLock = new Lock("IO Lock");               // lock for making Read/Write atomic
+
 #endif
 
 #ifdef FILESYS
-    synchDisk = new SynchDisk ("DISK");
+	synchDisk = new(std::nothrow) SynchDisk((char *) "DISK");
+    directoryLock = new(std::nothrow) Lock("directoryLock");
+    diskmapLock = new(std::nothrow) Lock("diskmap Lock");
+    diskLock = new(std::nothrow) Lock("diskLock");
+    vmFile = NULL;
+
+    diskMap = new(std::nothrow) BitMap(NumSectors);
+    // vmDisk = new(std::nothrow) SynchDisk("VM DISK");
+    memLock = new(std::nothrow) Lock("memLock");
+
+    for(int i = 0; i < NumPhysPages; ++i)
+	reversePageTable[i] = NULL;
 #endif
 
 #ifdef FILESYS_NEEDED

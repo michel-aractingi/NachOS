@@ -14,32 +14,37 @@
 #include "addrspace.h"
 #include "synch.h"
 #include "synchconsole.h"
-
+#include "filetable.h"
+#include "filesys.h"
+class FileSystem;
 //----------------------------------------------------------------------
 // StartProcess
 //      Run a user program.  Open the executable, load it into
 //      memory, and jump to it.
 //----------------------------------------------------------------------
+class FileVector;
 
 void
 StartProcess (char *filename)
 {
-    OpenFile *executable = fileSystem->Open(filename);
+    OpenFile *executable = fileSystem->Open (filename,1);
     AddrSpace *space;
 
     if (executable == NULL)
       {
-	  printf ("Unable to open file %s\n", filename);
+	  printf ("Unable to open files %s\n", filename);
 	  return;
       }
     space = new AddrSpace (executable);
     currentThread->space = space;
+
+
 //CHANGED TO ADD ID TO INITIAL THREAD
    currentThread->Tid = space->giveTid();
    currentThread->numberOfThread = space->bitmap->Find();
    space->Addid(currentThread->Tid,currentThread->numberOfThread);
    currentThread->space->semJoin[currentThread->numberOfThread].semaphore = new Semaphore ("Join Semaphore",0);
-   
+
 ///
     delete executable;		// close file
 

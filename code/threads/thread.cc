@@ -45,8 +45,9 @@ Thread::Thread (const char *threadName)
     // user threads.
     for (int r=NumGPRegs; r<NumTotalRegs; r++)
       userRegisters[r] = 0;
-    workingDirectory = 1;
-    fileVector = new FileVector();
+    FileVector *vector = new(std::nothrow) FileVector();
+    fileVector = vector;
+    currentSector = 1;
 #endif
 }
 
@@ -99,6 +100,7 @@ Thread::Fork (VoidFunctionPtr func, int arg)
 
     StackAllocate (func, arg);
 
+
 #ifdef USER_PROGRAM
 
     // LB: The addrspace should be tramsitted here, instead of later in
@@ -109,15 +111,17 @@ Thread::Fork (VoidFunctionPtr func, int arg)
     // LB: Observe that currentThread->space may be NULL at that time.
     if(this->space == NULL){
     this->space = currentThread->space;
-    workingDirectory = 1;
-    fileVector = new FileVector();
+    FileVector *vector = new(std::nothrow) FileVector();
+    fileVector = vector;
 }
 #endif // USER_PROGRAM
 
     IntStatus oldLevel = interrupt->SetLevel (IntOff);
+
     scheduler->ReadyToRun (this);	// ReadyToRun assumes that interrupts 
     // are disabled!
     (void) interrupt->SetLevel (oldLevel);
+
 }
 
 //----------------------------------------------------------------------

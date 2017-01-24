@@ -1,3 +1,4 @@
+
 #include "system.h"
 #include "filetable.h"
 //-----------------------------------------------------------
@@ -85,6 +86,7 @@ Table::~Table() {
 TableEntry *
 Table::ReadEntry(OpenFileId id) {
     ASSERT(id >= 0 && id < MAX_OPEN_FILE_ID);
+
     return table[id];
 }
 
@@ -163,6 +165,7 @@ OpenFileTable::Insert(OpenFile *f) {
     for(int i = 0; i < fileTable->Length(); ++i) {		// iterate over fileTable, looking for a free spot
         if(fileTable->ReadEntry(i) == NULL) {			// found free spot, add OpenFile as new Entry there
             fileTable->WriteEntry(i, f);				// insert the Openfile into the free spot
+
             return i;
         }
     }
@@ -278,6 +281,7 @@ FileVector::~FileVector() {
 //-----------------------------------------------------------
 OpenFileId
 FileVector::Insert(OpenFile *f) {
+
     OpenFileId globalId = globalFileTable->Insert(f);		// insert the OpenFile into the system-wide OpenFileTable and save the corresponding id
 
     OpenFileId localId = -1;				// set as -1 initially in case it is not found

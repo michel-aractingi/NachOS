@@ -53,7 +53,7 @@ FileHeader::Allocate(BitMap *freeMap, int fileSize)
         indirectionList = new int[IndirectionSize];
         //bzero(&indirectionList,IndirectionSize);
         dataSectors[i] = freeMap->Find();
-        for(int j=0; (j < IndirectionSize) && (sectorcount < numSectors); j++)
+        for(int j=0; (j < (int)IndirectionSize) && (sectorcount < numSectors); j++)
         {
             indirectionList[j] = freeMap->Find();
             sectorcount++;
