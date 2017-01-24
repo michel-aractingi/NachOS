@@ -45,6 +45,8 @@ Thread::Thread (const char *threadName)
     // user threads.
     for (int r=NumGPRegs; r<NumTotalRegs; r++)
       userRegisters[r] = 0;
+    workingDirectory = 1;
+    fileVector = new FileVector();
 #endif
 }
 
@@ -107,6 +109,8 @@ Thread::Fork (VoidFunctionPtr func, int arg)
     // LB: Observe that currentThread->space may be NULL at that time.
     if(this->space == NULL){
     this->space = currentThread->space;
+    workingDirectory = 1;
+    fileVector = new FileVector();
 }
 #endif // USER_PROGRAM
 

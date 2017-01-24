@@ -20,6 +20,8 @@ Statistics *stats;		// performance metrics
 Timer *timer;			// the hardware timer device,
 				// for invoking context switches
 Semaphore *exitLock;
+Lock *ioLock;               // lock for making Read/Write atomic
+OpenFileTable *globalFileTable;
 #ifdef FILESYS_NEEDED
 FileSystem *fileSystem;
 #endif
@@ -146,7 +148,8 @@ Initialize (int argc, char **argv)
     scheduler = new Scheduler ();	// initialize the ready queue
     if (randomYield)		// start the timer (if needed)
 	timer = new Timer (TimerInterruptHandler, 0, randomYield);
-
+	ioLock = new Lock("IO Lock");               // lock for making Read/Write atomic
+	globalFileTable = new OpenFileTable();
     threadToBeDestroyed = NULL;
 
     // We didn't explicitly allocate the current thread we are running in.

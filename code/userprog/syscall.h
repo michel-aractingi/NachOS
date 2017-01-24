@@ -39,6 +39,8 @@
 #define SC_UserThreadJoin   18
 #define SC_ForkExec   19
 #define SC_GetInt     20
+#define SC_MakeDirectory 21
+#define SC_ChangeDirectory 22
 
 #ifdef IN_USER_MODE
 
@@ -150,6 +152,9 @@ int  UserThreadCreate (void func (void *arg), void *arg);
 void UserThreadExit();
 void UserThreadJoin(int ThreadNum);
 int ForkExec(char *s);
+int MakeDirectory(char *s);
+int ChangeDirectory(char *s);
+
 #endif // IN_USER_MODE
 
 #endif /* SYSCALL_H */

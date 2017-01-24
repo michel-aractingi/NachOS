@@ -56,7 +56,7 @@
 
 // External functions used by this file
 
-extern void ThreadTest (void), Copy (const char *unixFile, const char *nachosFile);
+extern void ThreadTest (void), Copy (const char *unixFile, const char *nachosFile), Lists();
 extern void Print (char *file), PerformanceTest (void);
 extern void StartProcess (char *file), ConsoleTest (char *in, char *out), SynchConsoleTest(char *in, char *out);
 extern void MailTest (int networkID,int machineID);
@@ -148,6 +148,10 @@ main (int argc, char **argv)
 		ASSERT (argc > 1);
 		fileSystem->Remove (*(argv + 1));
 		argCount = 2;
+	    }
+	    else if (!strcmp (*argv, "-ls"))
+	    {			// list Nachos directory
+		    Lists();
 	    }
 	  else if (!strcmp (*argv, "-l"))
 	    {			// list Nachos directory

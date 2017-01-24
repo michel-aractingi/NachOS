@@ -81,7 +81,7 @@ Print(char *name)
     int i, amountRead;
     char *buffer;
 
-    if ((openFile = fileSystem->Open(name)) == NULL) {
+    if ((openFile = fileSystem->Open(name,1)) == NULL) {
 	printf("Print: unable to open file %s\n", name);
 	return;
     }
@@ -94,6 +94,19 @@ Print(char *name)
 
     delete openFile;		// close the Nachos file
     return;
+}
+
+void
+MakeDirectory(char *name) {
+    if(!fileSystem->MakeDirectory(name, 0, 1))
+        printf("error: could not create directory\n");
+    else
+        printf("created directory\n");
+    return ;
+}
+
+void Lists() {
+    fileSystem->List(1);
 }
 
 //----------------------------------------------------------------------

@@ -137,9 +137,37 @@ Directory::Add(const char *name, int newSector)
             table[i].inUse = TRUE;
             strncpy(table[i].name, name, FileNameMaxLen); 
             table[i].sector = newSector;
+            table[i].isDirectory = FALSE;
         return TRUE;
 	}
     return FALSE;	// no space.  Fix when we have extensible files.
+}
+
+bool
+Directory::AddDirectory(const char *name, int newSector)
+{
+    if (FindIndex(name) != -1)
+        return FALSE;
+
+    for (int i = 0; i < tableSize; i++)
+        if (!table[i].inUse) {
+            table[i].inUse = TRUE;
+            strncpy(table[i].name, name, FileNameMaxLen);
+            table[i].sector = newSector;
+            table[i].isDirectory = TRUE;
+            return TRUE;
+        }
+    return FALSE;	// no space.  Fix when we have extensible files.
+}
+
+void Directory::MakeHierarchy(int sector, int parentSector) {
+    table[0].inUse = true;
+    table[0].sector = sector;
+    strcpy(table[0].name, ".");
+
+    table[1].inUse = true;
+    table[1].sector = parentSector;
+    strcpy(table[1].name, "..");
 }
 
 //----------------------------------------------------------------------
@@ -194,4 +222,48 @@ Directory::Print()
 	}
     printf("\n");
     delete hdr;
+}
+
+bool Directory::isDirectory(char *name) {
+    int i = FindIndex(name);
+    if (i != -1){
+        return table[i].isDirectory;
+    }
+    return FALSE;
+}
+
+bool Directory::isFull() {
+    for (int i = 2; i < tableSize; i++) {
+        if(table[i].inUse == FALSE)
+            return FALSE;
+    }
+    return TRUE;
+}
+
+bool Directory::isEmpty() {
+    for (int i = 2; i < tableSize; i++) {
+        if (table[i].inUse == TRUE)
+            return FALSE;
+    }
+    return TRUE;
+}
+
+void
+Directory::List(int tabs)
+{
+    for (int i = 0; i < tableSize; i++) {
+        if (table[i].inUse) {
+            for(int j = 0; j < tabs; ++j)
+                printf("\t");
+            printf("%s\n", table[i].name);
+            if(table[i].isDirectory && strcmp(table[i].name, ".") && strcmp(table[i].name, "..")) {
+                Directory *dir = new Directory(10);
+                OpenFile *dirFile = new OpenFile(table[i].sector);
+                dir->FetchFrom(dirFile);
+                dir->List(tabs + 1);
+                delete dir;
+                delete dirFile;
+            }
+        }
+    }
 }

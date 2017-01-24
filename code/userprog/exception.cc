@@ -25,6 +25,9 @@
 #include "system.h"
 #include "syscall.h"
 #include "userthread.h"
+#include "filesys.h"
+#include "filetable.h"
+class FileSystem;
 
 //----------------------------------------------------------------------
 // UpdatePC : Increments the Program Counter register in order to resume
@@ -71,7 +74,11 @@ copyStringFromMachine ( int from , char *to  , int size){
 	for(i=0;i<size;i++)
 	{
 		
-	if(!machine->ReadMem(from + i, 1 , &ch)){fprintf(stdout,"error");}
+	    if(!machine->ReadMem(from + i, 1 , &ch))
+        {
+            fprintf(stdout,"error");
+        }
+
 		to[i] = (char) ch;
 		//fprintf(stdout,"%d\n",ch);
 	}
@@ -191,6 +198,101 @@ ExceptionHandler(ExceptionType which)
       do_ForkExec(buff);
       break;
     }
+        case SC_Create:{
+            copyStringFromMachine(machine->ReadRegister(4),buff,MAX_STRING_SIZE);
+            if(buff == NULL){
+                break;
+            }
+            printf("%s\n",buff);
+            fileSystem->Create(buff,0,currentThread->workingDirectory);
+
+        }
+        case SC_Read:{
+
+            copyStringFromMachine(machine->ReadRegister(4),buff,MAX_STRING_SIZE);
+            if(buff != NULL){
+                int size = machine->ReadRegister(5);
+
+                OpenFileId id = machine->ReadRegister(6);
+                if(id == ConsoleOutput){
+                    synchconsole->SynchGetString(buff,MAX_STRING_SIZE);
+                    copyStringToMachine (machine->ReadRegister(4),buff,MAX_STRING_SIZE);
+                }
+                else{
+                    ioLock->Acquire();
+                    OpenFile *f = currentThread->fileVector->Resolve(id);
+                    int numRead = 0;
+                    if(f!=NULL){
+                        numRead = f->Read(buff,size);
+                        printf("%d : %d : %s\n",size,numRead,buff);
+
+                    }
+                    ioLock->Release();
+                    copyStringToMachine(machine->ReadRegister(4),buff,numRead);
+                    machine->WriteRegister(2,numRead);
+                }
+            }
+            break;
+
+        }
+        case SC_Write:{
+            copyStringFromMachine(machine->ReadRegister(4),buff,MAX_STRING_SIZE);
+            if(buff != NULL){
+                int size = machine->ReadRegister(5);
+                OpenFileId id = machine->ReadRegister(6);
+                if(id == ConsoleOutput){
+                    synchconsole->SynchPutString(buff);
+                }
+                else{
+                    ioLock->Acquire();
+                    OpenFile *f = currentThread->fileVector->Resolve(id);
+                    if(f!=NULL){
+                        f->Write(buff,size);
+                    }
+                    ioLock->Release();
+                }
+
+            }
+            break;
+        }
+        case SC_ChangeDirectory:{
+            copyStringFromMachine(machine->ReadRegister(4),buff,MAX_STRING_SIZE);
+            printf("%s : %d",buff,currentThread->workingDirectory);
+            int sector = fileSystem->ChangeDirectory(buff,currentThread->workingDirectory);
+            currentThread->workingDirectory = sector;
+            machine->WriteRegister(2,sector);
+            break;
+        }
+        case SC_Open:{
+            copyStringFromMachine(machine->ReadRegister(4),buff,MAX_STRING_SIZE);
+            if(buff != NULL){
+                OpenFile *f = fileSystem->Open(buff,currentThread->workingDirectory);
+                if(f != NULL){
+                    OpenFileId id = currentThread->fileVector->Insert(f);
+                    machine->WriteRegister(2,id);
+                }
+            }
+            else {
+                machine->WriteRegister(2, -1);
+            }
+            break;
+        }
+        case SC_Close:{
+            OpenFileId id = machine->ReadRegister(4);
+            currentThread->fileVector->Remove(id);
+            break;
+        }
+        case SC_MakeDirectory:{
+            copyStringFromMachine(machine->ReadRegister(4),buff,MAX_STRING_SIZE);
+            //printf("Created from : %d\n", currentThread->space->currentSector);
+            if(fileSystem->MakeDirectory(buff,0, currentThread->workingDirectory)){
+                machine->WriteRegister(2,1);
+            }
+            else{
+                machine->WriteRegister(2,-1);
+            }
+            break;
+        }
     default: {
       printf("Unexpected user mode exception %d %d\n", which, type);
       ASSERT(FALSE);

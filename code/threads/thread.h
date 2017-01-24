@@ -39,7 +39,7 @@
 
 #include "copyright.h"
 #include "utility.h"
-
+#include "filetable.h"
 #ifdef USER_PROGRAM
 #include "machine.h"
 #include "addrspace.h"
@@ -142,8 +142,10 @@ class Thread
   public:
     void SaveUserState ();	// save user-level register state
     void RestoreUserState ();	// restore user-level register state
-
+    int workingDirectory;
     AddrSpace *space;		// User code this thread is running.
+    FileVector *fileVector;
+
 #endif
 };
 

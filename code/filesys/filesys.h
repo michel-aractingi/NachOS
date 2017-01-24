@@ -76,6 +76,8 @@ class FileSystem {
 
     bool Create(const char *name, int initialSize);  	
 					// Create a file (UNIX creat)
+    bool Create(char *name, int initialSize, int wd);
+    // Create a file (UNIX creat)
 
     OpenFile* Open(const char *name); 	// Open a file (UNIX open)
 
@@ -85,11 +87,27 @@ class FileSystem {
 
     void Print();			// List all the files and their contents
 
-  private:
+    bool MakeDirectory(char *name, int initialSize, int wd);
+
+    int ChangeDirectory(char *name, int wd);
+
+    bool Remove(char *name, int wd);
+
+    bool RemoveDirectory(char *name, int wd);
+
+    OpenFile* Open(char *name, int wd);
+    void List(int wd);
+    void ReadLock();
+    void ReadUnlock();
+    void WriteLock();
+    void WriteUnlock();
+
+private:
    OpenFile* freeMapFile;		// Bit map of free disk blocks,
 					// represented as a file
    OpenFile* directoryFile;		// "Root" directory -- list of 
 					// file names, represented as a file
+
 };
 
 #endif // FILESYS

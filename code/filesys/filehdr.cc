@@ -46,8 +46,21 @@ FileHeader::Allocate(BitMap *freeMap, int fileSize)
     if (freeMap->NumClear() < numSectors)
 	return FALSE;		// not enough space
 
-    for (int i = 0; i < numSectors; i++)
-	dataSectors[i] = freeMap->Find();
+    int *indirectionList;
+    int sectorcount = 0;
+    for (int i = 0; (i < (int)NumDirect) && (sectorcount < numSectors); i++)
+    {
+        indirectionList = new int[IndirectionSize];
+        //bzero(&indirectionList,IndirectionSize);
+        dataSectors[i] = freeMap->Find();
+        for(int j=0; (j < IndirectionSize) && (sectorcount < numSectors); j++)
+        {
+            indirectionList[j] = freeMap->Find();
+            sectorcount++;
+        }
+        synchDisk->WriteSector(dataSectors[i],(char *)indirectionList);
+    }
+
     return TRUE;
 }
 
@@ -61,9 +74,19 @@ FileHeader::Allocate(BitMap *freeMap, int fileSize)
 void 
 FileHeader::Deallocate(BitMap *freeMap)
 {
-    for (int i = 0; i < numSectors; i++) {
-	ASSERT(freeMap->Test((int) dataSectors[i]));  // ought to be marked!
-	freeMap->Clear((int) dataSectors[i]);
+    int *indirectionList;
+    int sectorCount = 0;
+    for (int i = 0; (i < (int) NumDirect) && (sectorCount < (int)numSectors); i++)
+    {
+        indirectionList = new int[IndirectionSize];
+        //bzero(&indirectionList,IndirectionSize);
+        synchDisk->ReadSector(dataSectors[i],(char *)indirectionList);
+        for(int j=0; (j < (int)IndirectionSize) && (sectorCount < (int)numSectors); j++)
+        {
+            ASSERT(freeMap->Test((int) indirectionList[j]));
+            sectorCount++;
+        }
+        freeMap->Clear(dataSectors[i]);
     }
 }
 
@@ -106,7 +129,12 @@ FileHeader::WriteBack(int sector)
 int
 FileHeader::ByteToSector(int offset)
 {
-    return(dataSectors[offset / SectorSize]);
+    int *indirectionList = new int[IndirectionSize];
+    int sector = offset / SectorSize;
+    int numList = sector / IndirectionSize;
+    int position = sector % IndirectionSize;
+    synchDisk->ReadSector(dataSectors[numList],(char *)indirectionList);
+    return (indirectionList[position]);
 }
 
 //----------------------------------------------------------------------

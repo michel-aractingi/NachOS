@@ -17,8 +17,11 @@
 #include "timer.h"
 #include "../userprog/frameprovider.h"
 #include "synch.h"
+#include "filetable.h"
+#include "filesys.h"
+
 //buffer size for copy string
-#define MAX_STRING_SIZE 30
+#define MAX_STRING_SIZE 1024
 #define NumPhysPages 512
 // Initialization and cleanup routines
 extern void Initialize (int argc, char **argv);	// Initialization,
@@ -33,6 +36,9 @@ extern Interrupt *interrupt;	// interrupt status
 extern Statistics *stats;	// performance metrics
 extern Timer *timer;		// the hardware alarm clock
                                   // number of child processes
+
+extern Lock *ioLock;               // lock for making Read/Write atomic
+extern OpenFileTable *globalFileTable;
 #ifdef USER_PROGRAM
 #include "machine.h"
 #include "synchconsole.h"
