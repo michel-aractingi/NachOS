@@ -90,8 +90,7 @@ copyStringToMachine ( int addr , char *from , int size){
 void
 ExceptionHandler(ExceptionType which)
 {
-  char buff[MAX_STRING_SIZE];
-  //buff = NULL;
+    char buff[MAX_STRING_SIZE];
   int type = machine->ReadRegister(2);
   if (which == SyscallException) {
     switch (type) {
@@ -200,6 +199,7 @@ ExceptionHandler(ExceptionType which)
             if(buff == NULL){
                 break;
             }
+            //printf("buffer : %s \n", buff);
             fileSystem->Create(buff,0,currentThread->currentSector);
             break;
         }
@@ -207,7 +207,7 @@ ExceptionHandler(ExceptionType which)
 
             copyStringFromMachine(machine->ReadRegister(4),buff,MAX_STRING_SIZE);
             if(buff != NULL){
-                int size = machine->ReadRegister(5);
+                //int size = machine->ReadRegister(5);
 
                 OpenFileId id = machine->ReadRegister(6);
                 if(id == ConsoleOutput){
@@ -219,9 +219,7 @@ ExceptionHandler(ExceptionType which)
                     OpenFile *f = currentThread->fileTable->Resolve(id);
                     int numRead = 0;
                     if(f!=NULL){
-                        numRead = f->Read(buff,size);
-                        printf("%d : %d : %s\n",size,numRead,buff);
-
+                        numRead = f->Read(buff,MAX_STRING_SIZE);
                     }
                     ioLock->Release();
                     copyStringToMachine(machine->ReadRegister(4),buff,numRead);
@@ -234,7 +232,7 @@ ExceptionHandler(ExceptionType which)
         case SC_Write:{
             copyStringFromMachine(machine->ReadRegister(4),buff,MAX_STRING_SIZE);
             if(buff != NULL){
-                int size = machine->ReadRegister(5);
+                //int size = machine->ReadRegister(5);
                 OpenFileId id = machine->ReadRegister(6);
                 if(id == ConsoleOutput){
                     synchconsole->SynchPutString(buff);
@@ -243,7 +241,7 @@ ExceptionHandler(ExceptionType which)
                     ioLock->Acquire();
                     OpenFile *f = currentThread->fileTable->Resolve(id);
                     if(f!=NULL){
-                        f->Write(buff,size);
+                        f->Write(buff,MAX_STRING_SIZE);
                     }
                     ioLock->Release();
                 }
@@ -282,7 +280,6 @@ ExceptionHandler(ExceptionType which)
             //printf("Created from : %d\n", currentThread->space->currentSector);
             if(fileSystem->MakeDir(buff,0, currentThread->currentSector)){
                 machine->WriteRegister(2,1);
-
             }
             else{
                 machine->WriteRegister(2,-1);
@@ -291,7 +288,7 @@ ExceptionHandler(ExceptionType which)
         }
  	case SC_Remove:{
             copyStringFromMachine(machine->ReadRegister(4),buff,MAX_STRING_SIZE);
-	    fileSystem->Remove(buff, currentThread->currentSector); 
+	        fileSystem->Remove(buff, currentThread->currentSector);
             break;
         }    
 #endif //FILESYS

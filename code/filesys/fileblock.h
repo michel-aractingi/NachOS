@@ -5,7 +5,7 @@
 #include "bitmap.h"
 
 #define MAX_BLOCKS (int) (SectorSize  / sizeof(int))
-#define EMPTY_BLOCK -1
+#define EMPTY_BLOCK 0
 
 class IndirectBlock {
 public:

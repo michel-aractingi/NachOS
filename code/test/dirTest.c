@@ -24,11 +24,11 @@ changedir(char *name) {
     int result;
     result = ChangeDirectory(name);
     if(result == -1) {
-        PutString("error: ChangeDir() failed\n");
+        //PutString("error: ChangeDir() failed\n");
         Exit(1);
     }
 
-    PutString("changed directory\n");
+    //PutString("changed directory\n");
 }
 
 OpenFileId
@@ -37,12 +37,12 @@ create_and_open_file(char *name) {
     Create(name);
     id = Open(name);
     if(id < 0) {
-        PutString("error: file open failed\n");
+        //PutString("error: file open failed\n");
         Close(id);
         Exit(1);
     }
 
-    PutString("created file: ");
+    //PutString("created file: ");
     PutString(name);
     PutString("\n");
     return id;
@@ -56,30 +56,29 @@ int main() {
 
     in = Open("input");
     if(in < 0) {
-        PutString("error: file open failed\n");
+        //PutString("error: file open failed\n");
         Close(in);
         Exit(1);
     }
     createdir("test");
-    createdir("hello");
-    createdir("hello/world");
-    createdir("hello/world/foo");
-    createdir("hello/world/h");
-    changedir("hello/world/foo");
-    changedir("/hello/world");
-    //changedir("hello/world/foo");
+    createdir("test/main");
+    createdir("test/bar");
+    Remove("test");
+    Remove("test/main");
+    createdir("dirmain");
+    createdir("dirmain/child");
+    changedir("dirmain/child");
     
     out = create_and_open_file("bar");
 
     while((num_read = Read(buffer, N, in)) > 0)
         Write(buffer, num_read, out);
 
-   // PutString("copied over file\n");
+    //PutString("copied over file\n");
+
     Close(in);
     Close(out);
-    //Remove("h");
- //   Remove("bar");
-  //  changedir("hello/world");
-    //Remove("foo");
+
+
     Exit(0);
 }

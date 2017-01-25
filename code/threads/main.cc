@@ -146,7 +146,7 @@ main (int argc, char **argv)
 	  else if (!strcmp (*argv, "-r"))
 	    {			// remove Nachos file
 		ASSERT (argc > 1);
-		//fileSystem->Remove(*(argv + 1));
+		fileSystem->Remove(*(argv + 1), 1);
 		argCount = 2;
 	    }
 	  else if (!strcmp (*argv, "-l"))
@@ -161,8 +161,11 @@ main (int argc, char **argv)
 	    {			// performance test
 		PerformanceTest ();
 	    }
-        else if(!strcmp(*argv, "-s")){
-        FileSystemShell();
+      else if(!strcmp(*argv, "-s")){
+            FileSystemShell();
+        }
+        else if (!strcmp(*argv, "-mkdir")){
+            fileSystem->MakeDir(*(argv + 1), 0, 1);
         }
 #endif // FILESYS
 #ifdef NETWORK
@@ -179,7 +182,7 @@ main (int argc, char **argv)
 #endif // NETWORK
       }
 #ifdef FILESYS
-   interrupt->Halt();
+   return (0);
 #endif
 
     currentThread->Finish ();	// NOTE: if the procedure "main" 

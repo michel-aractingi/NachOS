@@ -245,15 +245,27 @@ Directory::Print()
     delete hdr;
 }
 
+bool Directory::isEmpty(){
+    for (int i = 2; i<tableSize ; i++)
+    {
+        if(table[i].inUse == true) {
+            return false;
+        }
+    }
+    return true;
+}
+
 bool 
-Directory::isEmpty(){
+Directory::isEmpty(int sector){
   int i;
   for (i = 2; i<tableSize ; i++)
     {
-   
-    if(table[i].inUse == true) {
-    fprintf(stdout,"dir not empty %d\n",i);
-    return false;}
+        if(table[i].inUse == true && table[i].sector == sector) {
+            Directory *dir = new Directory(10);
+            OpenFile *dirFile = new OpenFile(table[i].sector);
+            dir->FetchFrom(dirFile);
+            return dir->isEmpty();
+        }
     }
 
   return true;

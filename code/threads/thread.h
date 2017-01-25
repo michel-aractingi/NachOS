@@ -144,6 +144,7 @@ class Thread
     void RestoreUserState ();	// restore user-level register state
     int currentSector;
     FileVector *fileTable;
+    char *bu;
     AddrSpace *space;		// User code this thread is running.
 #endif
 };

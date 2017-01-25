@@ -22,7 +22,7 @@
 #include "synch.h"
 #include "frameprovider.h"
 #include <strings.h>		/* for bzero */
-
+#ifndef USE_TLB
 //----------------------------------------------------------------------
 // SwapHeader
 //      Do little endian to big endian conversion on the bytes in the 
@@ -94,6 +94,7 @@ static void ReadAtVirtual(OpenFile *executable,
 //SemJoin::~SemJoin(){}
 AddrSpace::AddrSpace (OpenFile * executable)
 {
+
     NoffHeader noffH;
     unsigned int i, size;
 
@@ -338,3 +339,4 @@ Thread* AddrSpace::InitUserThread(){
 int AddrSpace::GetPid(){
 return Pid;
 }
+#endif

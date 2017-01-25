@@ -431,21 +431,22 @@ FileSystem::Remove(char *name, int wdSector)
         return false;
     }
 
-    OpenFile *dirFile = new(std::nothrow) OpenFile(1);//wdSector);
+    OpenFile *dirFile = new(std::nothrow) OpenFile(wdSector);
     directory = new(std::nothrow) Directory(NumDirEntries);
     directory->FetchFrom(dirFile);
     sector = directory->Find(name);
+    printf("trying to remove %s %d\n",name, sector);
     if (sector == -1) {
         delete directory;
         delete dirFile;
         directoryLock->Release();
         fprintf(stdout,"sector =-1\n");
         return false;			 // file not found
-        
+
     }
 
     if(directory->isDirectory(name)) {
-      if(!directory->isEmpty()){
+      if(!directory->isEmpty(sector)){
         fprintf(stdout,"not empty\n"); 
         DEBUG('f', "cannot Remove() directory\n");
         delete directory;
@@ -458,17 +459,16 @@ FileSystem::Remove(char *name, int wdSector)
     }
     /*fileHdr = new(std::nothrow) FileHeader();
     fileHdr->FetchFrom(sector);*/
-    fprintf(stdout,"REACHED\n");
     diskmapLock->Acquire();
     freeMap = new(std::nothrow) BitMap(NumSectors);
     freeMap->FetchFrom(freeMapFile);
 
-    if(!directory->isDirectory(name)){ 
+
  	fileHdr = new(std::nothrow) FileHeader();
-        fileHdr->FetchFrom(sector);
-        fileHdr->Deallocate(freeMap);           // remove data blocks
-        delete fileHdr;
-        }  
+    fileHdr->FetchFrom(sector);
+    fileHdr->Deallocate(freeMap);           // remove data blocks
+    delete fileHdr;
+
     freeMap->Clear(sector);			// remove header block
     directory->Remove(name);
 
@@ -530,7 +530,7 @@ FileSystem::Print()
     printf("Directory file header:\n");
     directoryLock->Acquire();
     dirHdr->FetchFrom(DirectorySector);
-    dirHdr->Print();
+    //dirHdr->Print();
 
     freeMap->FetchFrom(freeMapFile);
     freeMap->Print();

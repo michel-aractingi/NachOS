@@ -64,7 +64,10 @@ public:
     //  names and their contents.
     void MakeHier(int sector, int parentsector);
 
+    bool isEmpty(int sector);
+
     bool isEmpty();
+
 private:
     int tableSize;			// Number of directory entries
     DirectoryEntry *table;		// Table of pairs:
