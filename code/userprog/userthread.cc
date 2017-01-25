@@ -70,8 +70,12 @@ void createProc(int lol) {
 
 void do_ForkExec(char *f) {
 
-
+#ifdef FILESYS
   OpenFile* exec = fileSystem->Open(f,currentThread->space->currentSector);
+#endif
+#ifdef FILESYS_STUB
+  OpenFile *exec = fileSystem->Open(f);
+#endif
     if(exec == NULL){
         printf("Not Found %s\n",f);
     }

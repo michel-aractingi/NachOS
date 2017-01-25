@@ -18,29 +18,30 @@
 /* system call codes -- used by the stubs to tell the kernel which system call
  * is being asked for
  */
-#define SC_Halt		0
-#define SC_Exit		1
-#define SC_Exec		2
-#define SC_Join		3
-#define SC_Create	4
-#define SC_Open		5
-#define SC_Read		6
-#define SC_Write	7
-#define SC_Close	8
-#define SC_Fork		9
-#define SC_Yield	10
-#define SC_PutChar	11
-#define SC_PutString 	12
-#define SC_GetChar	13
-#define SC_GetString	14
-#define SC_PutInt       15
+#define SC_Halt		     0
+#define SC_Exit		     1
+#define SC_Exec		     2
+#define SC_Join		     3
+#define SC_Create	     4
+#define SC_Open		     5
+#define SC_Read		     6
+#define SC_Write	     7
+#define SC_Close	     8
+#define SC_Fork		     9
+#define SC_Yield	    10
+#define SC_PutChar	    11
+#define SC_PutString 	    12
+#define SC_GetChar	    13
+#define SC_GetString	    14
+#define SC_PutInt           15
 #define SC_UserThreadCreate 16
 #define SC_UserThreadExit   17
 #define SC_UserThreadJoin   18
-#define SC_ForkExec   19
-#define SC_GetInt     20
-#define SC_MakeDirectory 21
-#define SC_ChangeDirectory 22
+#define SC_ForkExec         19
+#define SC_GetInt           20
+#define SC_MakeDirectory    21
+#define SC_ChangeDirectory  22
+#define SC_Remove 	    23 
 #ifdef IN_USER_MODE
 
 // LB: This part is read only on compiling the test/*.c files.
@@ -153,6 +154,8 @@ void UserThreadJoin(int ThreadNum);
 int ForkExec(char *s);
 int MakeDirectory(char *s);
 int ChangeDirectory(char *s);
+int Remove (char *s);
+
 
 #endif // IN_USER_MODE
 

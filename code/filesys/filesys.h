@@ -14,7 +14,33 @@ extern OpenFile* directoryFile;   // "Root" directory -- list of
 
 OpenFile *GetFreeMapFile();   // getter method
 OpenFile *GetDirectoryFile(); // getter method
+#ifdef FILESYS_STUB 		// Temporarily implement file system calls as 
+				// calls to UNIX, until the real file system
+				// implementation is available
+class FileSystem {
+  public:
+    FileSystem(bool format) {}
 
+    bool Create(const char *name, int initialSize) { 
+	int fileDescriptor = OpenForWrite(name);
+
+	if (fileDescriptor == -1) return FALSE;
+	Close(fileDescriptor); 
+	return TRUE; 
+	}
+
+    OpenFile* Open(char *name) {
+	  int fileDescriptor = OpenForReadWrite(name, FALSE);
+
+	  if (fileDescriptor == -1) return NULL;
+	  return new OpenFile(fileDescriptor);
+      }
+
+    bool Remove(char *name) { return Unlink(name) == 0; }
+
+};
+
+#else // FILESYS
 class FileSystem {
 public:
     FileSystem(bool format);		// Initialize the file system.
@@ -40,5 +66,6 @@ public:
     void Print();			// List all the files and their contents
 
 };
-
+#endif
 #endif // FS_H
+

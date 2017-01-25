@@ -62,9 +62,9 @@ public:
     void Print();			// Verbose print of the contents
     //  of the directory -- all the file
     //  names and their contents.
+    void MakeHier(int sector, int parentsector);
 
-    void Expand(int size);
-
+    bool isEmpty();
 private:
     int tableSize;			// Number of directory entries
     DirectoryEntry *table;		// Table of pairs:

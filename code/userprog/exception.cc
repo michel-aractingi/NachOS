@@ -189,6 +189,7 @@ ExceptionHandler(ExceptionType which)
       break;
 
     }
+#ifdef FILESYS
         case SC_Create:{
             copyStringFromMachine(machine->ReadRegister(4),buff,MAX_STRING_SIZE);
             if(buff == NULL){
@@ -283,6 +284,12 @@ ExceptionHandler(ExceptionType which)
             }
             break;
         }
+ 	case SC_Remove:{
+            copyStringFromMachine(machine->ReadRegister(4),buff,MAX_STRING_SIZE);
+	    fileSystem->Remove(buff, currentThread->space->currentSector); 
+            break;
+        }    
+#endif //FILESYS
     default: {
       printf("Unexpected user mode exception %d %d\n", which, type);
       ASSERT(FALSE);

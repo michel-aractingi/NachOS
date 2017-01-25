@@ -27,7 +27,12 @@ class FileVector;
 void
 StartProcess (char *filename)
 {
+#ifdef FILESYS
     OpenFile *executable = fileSystem->Open (filename,1);
+#endif //FILESYS
+#ifdef FILESYS_STUB
+   OpenFile *executable = fileSystem->Open (filename);
+#endif
     AddrSpace *space;
 
     if (executable == NULL)

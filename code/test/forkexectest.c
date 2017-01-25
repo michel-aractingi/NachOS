@@ -4,10 +4,10 @@ int main()
 
 { // PutString("pass exec\n");
   PutString("T\n");
-  ForkExec("user");
+  ForkExec("userpages1");
   PutString("pass exec 1\n");
   //PutString("pass exec\n");
-  ForkExec("put");
+  ForkExec("putstring");
   //PutString("pass exec 2\n");
   return 0;
 }

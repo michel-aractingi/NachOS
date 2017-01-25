@@ -68,8 +68,8 @@ Directory::FetchFrom(OpenFile *file)
 
     file->Seek(0);                                  // make sure we are at the beginning of the file
     file->Read((char *) &size, sizeof(int));        // read table size
-    if(size > tableSize)                            // if we have expanded, expand
-        Expand(size);
+    
+        
     file->Read((char *) table, tableSize * sizeof(DirectoryEntry)); // read table
     file->Seek(0);                                  // reset seek position
 }
@@ -101,7 +101,7 @@ Directory::WriteBack(OpenFile *file)
 int
 Directory::FindIndex(char *name)
 {
-    for (int i = 0; i < tableSize; i++)
+    for (int i = 2; i < tableSize; i++)
         if (table[i].inUse && !strncmp(table[i].name, name, FileNameMaxLen))
             return i;
     return -1;		// name not in directory
@@ -151,7 +151,7 @@ Directory::Add(char *name, int newSector)
     if (FindIndex(name) != -1)
         return false;
 
-    for (int i = 0; i < tableSize; i++) {
+    for (int i = 2; i < tableSize; i++) {
         if (!table[i].inUse) {
             table[i].inUse = true;
             strncpy(table[i].name, name, FileNameMaxLen);
@@ -161,18 +161,6 @@ Directory::Add(char *name, int newSector)
         }
     }
 
-    Expand(tableSize * INCREASE_FACTOR);        // increase capacity
-    for (int i = 0; i < tableSize; i++) {       // repeat search
-        if (!table[i].inUse) {
-            table[i].inUse = true;
-            strncpy(table[i].name, name, FileNameMaxLen);
-            table[i].sector = newSector;
-            table[i].isDir = false;
-            return true;
-        }
-    }
-
-    ASSERT(false);
     return false;
 }
 
@@ -180,8 +168,7 @@ bool
 Directory::AddDirectory(char *name, int newSector) {
     if (FindIndex(name) != -1)
         return false;
-
-    for (int i = 0; i < tableSize; i++)
+    for (int i = 2; i < tableSize; i++)
         if (!table[i].inUse) {
             table[i].inUse = true;
             strncpy(table[i].name, name, FileNameMaxLen);
@@ -189,19 +176,6 @@ Directory::AddDirectory(char *name, int newSector) {
             table[i].isDir = true;
             return true;
         }
-
-    Expand(tableSize * INCREASE_FACTOR);        // increase capacity
-    for (int i = 0; i < tableSize; i++) {       // repeat search
-        if (!table[i].inUse) {
-            table[i].inUse = true;
-            strncpy(table[i].name, name, FileNameMaxLen);
-            table[i].sector = newSector;
-            table[i].isDir = true;
-            return true;
-        }
-    }
-
-    ASSERT(false);
     return false;
 }
 
@@ -232,7 +206,7 @@ Directory::Remove(char *name)
 void
 Directory::List(int tabs)
 {
-    for (int i = 0; i < tableSize; i++) {
+    for (int i = 2; i < tableSize; i++) {
         if (table[i].inUse) {
             for(int j = 0; j < tabs; ++j)
                 printf("\t");
@@ -261,7 +235,7 @@ Directory::Print()
     FileHeader *hdr = new(std::nothrow) FileHeader();
 
     printf("Directory contents:\n");
-    for (int i = 0; i < tableSize; i++)
+    for (int i = 2; i < tableSize; i++)
         if (table[i].inUse) {
             printf("Name: %s, Sector: %d\n", table[i].name, table[i].sector);
             hdr->FetchFrom(table[i].sector);
@@ -271,21 +245,26 @@ Directory::Print()
     delete hdr;
 }
 
-//----------------------------------------------------------------------
-// Directory::Expand
-//  expand the table to have as many entries as "size"
-//----------------------------------------------------------------------
-
-void
-Directory::Expand(int size) {
-    DirectoryEntry *newTable = new(std::nothrow) DirectoryEntry[size];  // create new table
-    for(int i = 0; i < size; ++i) {     // copy over previous table
-        if(i < tableSize)
-            newTable[i] = table[i];
-        else
-            newTable[i].inUse = false;
+bool 
+Directory::isEmpty(){
+  int i;
+  for (i = 2; i<tableSize ; i++)
+    {
+   
+    if(table[i].inUse == true) {
+    fprintf(stdout,"dir not empty %d\n",i);
+    return false;}
     }
-    delete[] table;
-    table = newTable;
-    tableSize *= 2;
+
+  return true;
+}
+void 
+Directory::MakeHier(int sector, int parentsector){
+
+   table[0].inUse =true;
+   table[0].sector = sector;
+   strcpy(table[0].name,".");
+   table[1].inUse =true;
+   table[1].sector = parentsector;
+   strcpy(table[1].name,"..");
 }

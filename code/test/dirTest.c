@@ -64,14 +64,22 @@ int main() {
     createdir("hello");
     createdir("hello/world");
     createdir("hello/world/foo");
+    createdir("hello/world/h");
     changedir("hello/world/foo");
+    changedir("/hello/world");
+    //changedir("hello/world/foo");
+    
     out = create_and_open_file("bar");
 
     while((num_read = Read(buffer, N, in)) > 0)
         Write(buffer, num_read, out);
 
-    PutString("copied over file\n");
+   // PutString("copied over file\n");
     Close(in);
     Close(out);
+    //Remove("h");
+ //   Remove("bar");
+  //  changedir("hello/world");
+    //Remove("foo");
     Exit(0);
 }

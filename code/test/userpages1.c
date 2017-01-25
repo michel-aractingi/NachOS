@@ -1,7 +1,7 @@
 #include "syscall.h"
 #define THIS "aaa"
 #define THAT "bbb"
-const int N = 1024; // Choose it large enough!
+const int N = 10; // Choose it large enough!
 void puts(char *s)
 {
 char *p; for (p = s; *p != '\0'; p++) PutChar(*p);

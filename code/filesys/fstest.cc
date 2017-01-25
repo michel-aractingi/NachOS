@@ -242,7 +242,7 @@ void FileSystemShell(){
             //Copy(arguments[1],arguments[2]);
         }
         else if(!strcmp(arguments[0], "rm")){
-            //fileSystem->Remove(arguments[1]);
+            fileSystem->Remove(arguments[1],1);
         }
         else if(!strcmp(arguments[0], "mkdir")){
             //fileSystem->MakeDirectory(arguments[1],0,1);

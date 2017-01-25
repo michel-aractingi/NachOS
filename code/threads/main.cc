@@ -162,7 +162,6 @@ main (int argc, char **argv)
 		PerformanceTest ();
 	    }
         else if(!strcmp(*argv, "-s")){
-        printf("Here\n");
         FileSystemShell();
         }
 #endif // FILESYS
@@ -179,6 +178,9 @@ main (int argc, char **argv)
 	    }
 #endif // NETWORK
       }
+#ifdef FILESYS
+   interrupt->Halt();
+#endif
 
     currentThread->Finish ();	// NOTE: if the procedure "main" 
     // returns, then the program "nachos"

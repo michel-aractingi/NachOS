@@ -209,21 +209,29 @@ Yield:
 	j	$31
 	.end Yield
 
-.globl MakeDirectory
-.ent	MakeDirectory
+	.globl MakeDirectory
+	.ent	MakeDirectory
 MakeDirectory:
-		addiu $2,$0,SC_MakeDirectory
-		syscall
-j	$31
-.end MakeDirectory
+	addiu $2,$0,SC_MakeDirectory
+	syscall
+	j	$31
+	.end MakeDirectory
 
-.globl ChangeDirectory
-.ent	ChangeDirectory
+	.globl ChangeDirectory
+	.ent	ChangeDirectory
 ChangeDirectory:
-		addiu $2,$0,SC_ChangeDirectory
-		syscall
-j	$31
-.end ChangeDirectory
+	addiu $2,$0,SC_ChangeDirectory
+	syscall
+	j	$31
+	.end ChangeDirectory
+
+	.globl Remove
+ 	.ent    Remove
+Remove:
+ 	addiu $2,$0,SC_Remove
+	syscall
+	j	$31
+	.end	Remove
 
 /* dummy function to keep gcc happy */
         .globl  __main
