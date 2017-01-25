@@ -116,8 +116,7 @@ Directory::FindIndex(char *name)
 //	"name" -- the file name to look up
 //----------------------------------------------------------------------
 
-int
-Directory::Find(char *name)
+int Directory::Find(char *name)
 {
     int i = FindIndex(name);
 
@@ -126,8 +125,7 @@ Directory::Find(char *name)
     return -1;
 }
 
-bool
-Directory::isDirectory(char *name) {
+bool Directory::isDirectory(char *name) {
     int i = FindIndex(name);
     if(i != -1)
         return table[i].isDir;
@@ -145,8 +143,7 @@ Directory::isDirectory(char *name) {
 //	"newSector" -- the disk sector containing the added file's header
 //----------------------------------------------------------------------
 
-bool
-Directory::Add(char *name, int newSector)
+bool Directory::Add(char *name, int newSector)
 {
     if (FindIndex(name) != -1)
         return false;
@@ -164,8 +161,7 @@ Directory::Add(char *name, int newSector)
     return false;
 }
 
-bool
-Directory::AddDirectory(char *name, int newSector) {
+bool Directory::AddDirectory(char *name, int newSector) {
     if (FindIndex(name) != -1)
         return false;
     for (int i = 2; i < tableSize; i++)
@@ -187,8 +183,7 @@ Directory::AddDirectory(char *name, int newSector) {
 //	"name" -- the file name to be removed
 //----------------------------------------------------------------------
 
-bool
-Directory::Remove(char *name)
+bool Directory::Remove(char *name)
 {
     int i = FindIndex(name);
 
@@ -203,8 +198,7 @@ Directory::Remove(char *name)
 // 	List all the file names in the directory.
 //----------------------------------------------------------------------
 
-void
-Directory::List(int tabs)
+void Directory::List(int tabs)
 {
     for (int i = 2; i < tableSize; i++) {
         if (table[i].inUse) {
@@ -255,8 +249,7 @@ bool Directory::isEmpty(){
     return true;
 }
 
-bool 
-Directory::isEmpty(int sector){
+bool Directory::isEmpty(int sector){
   int i;
   for (i = 2; i<tableSize ; i++)
     {
@@ -270,8 +263,8 @@ Directory::isEmpty(int sector){
 
   return true;
 }
-void 
-Directory::MakeHier(int sector, int parentsector){
+
+void Directory::MakeHier(int sector, int parentsector){
 
    table[0].inUse =true;
    table[0].sector = sector;
