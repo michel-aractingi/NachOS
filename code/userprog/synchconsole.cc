@@ -85,7 +85,7 @@ void SynchConsole::SynchPutInt(int value) {
 void SynchConsole::SynchGetInt(int* n) {
   char * buffer = new char[MAX_STRING_SIZE];
   synchconsole->SynchGetString(buffer, MAX_STRING_SIZE);
-  sscanf(buffer, "%d", n);
+  if(sscanf(buffer, "%d", n)==0) fprintf(stderr,"Error not an integer\n");
   //fprintf(stdout,"buffer %d\n",*n);
   delete [] buffer;
 }

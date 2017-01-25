@@ -104,19 +104,24 @@ ExceptionHandler(ExceptionType which)
 
     case SC_PutChar: {
       DEBUG('a', "PutChar exception.\n");
+      ioLock->Acquire();
       synchconsole->SynchPutChar(machine->ReadRegister(4));
+      ioLock->Release();
       break;
     }
     case SC_PutString: {
       DEBUG('a', "PutString exception.\n");
 	//fprintf(stdout,"R4 %d\n",machine->ReadRegister(4));
+        ioLock->Acquire();
       	copyStringFromMachine(machine->ReadRegister(4),buff,MAX_STRING_SIZE);
 	//fprintf(stdout,"buffer %s\n",buff);
       	synchconsole->SynchPutString(buff);// fprintf(stdout,"out of put\n");
+        ioLock->Release();
       break;
     }
     case SC_Exit: {
-      DEBUG('a', "Exit process terminated\n");
+     DEBUG('a', "Exit process terminated\n");
+     fprintf(stdout, "Thread %d exited in proc %d\n",currentThread->Tid,currentThread->space->GetPid());
      exitLock->P();
      if(currentThread->space->isLast())
      {

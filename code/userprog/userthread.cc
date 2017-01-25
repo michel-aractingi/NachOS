@@ -20,7 +20,7 @@ int do_UserThreadCreate(int f, int arg) {
 int do_UserThreadExit() {
   currentThread->space->semJoin[currentThread->numberOfThread].semaphore->V();
   exitLock->P();
-   //fprintf(stdout, "Thread %d exited in proc %d\n",currentThread->Tid,currentThread->space->GetPid());
+   fprintf(stdout, "Thread %d exited in proc %d\n",currentThread->Tid,currentThread->space->GetPid());
   if(currentThread->space->isLast()){
       if(machine->isLast()){
           interrupt->Halt();
@@ -96,8 +96,6 @@ void do_ForkExec(char *f) {
 
   //space->setChild();
   //space->AddChild();
-  printf("Here : %d\n",proc->Tid);
   proc->Fork(createProc, 0);
-  scheduler->Print();
   //proc->space->AddThread();
 }

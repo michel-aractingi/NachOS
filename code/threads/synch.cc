@@ -119,7 +119,7 @@ Lock::Acquire ()
 {
  IntStatus oldLevel = interrupt->SetLevel(IntOff);
     if(this->isHeldByCurrentThread()){
-        printf("Invalid Relock Operation\n");
+ //       printf("Invalid Relock Operation\n");
      	(void) interrupt->SetLevel(oldLevel);
 	return;	   
 }
@@ -138,7 +138,7 @@ Lock::Release ()
 {
  IntStatus oldLevel = interrupt->SetLevel(IntOff);
      if(!this->isHeldByCurrentThread() || status == false){
-      	printf("Invalid Unlock Operation\n");
+//      	printf("Invalid Unlock Operation\n");
        	(void) interrupt->SetLevel(oldLevel);
 	return;
 }

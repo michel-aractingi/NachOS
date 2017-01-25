@@ -60,7 +60,7 @@ int main() {
         Close(in);
         Exit(1);
     }
-
+    createdir("test");
     createdir("hello");
     createdir("hello/world");
     createdir("hello/world/foo");
