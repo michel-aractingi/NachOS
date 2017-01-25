@@ -195,7 +195,7 @@ ExceptionHandler(ExceptionType which)
             if(buff == NULL){
                 break;
             }
-            fileSystem->Create(buff,0,currentThread->space->currentSector);
+            fileSystem->Create(buff,0,currentThread->currentSector);
             break;
         }
         case SC_Read:{
@@ -211,7 +211,7 @@ ExceptionHandler(ExceptionType which)
                 }
                 else{
                     ioLock->Acquire();
-                    OpenFile *f = currentThread->space->fileVector->Resolve(id);
+                    OpenFile *f = currentThread->fileTable->Resolve(id);
                     int numRead = 0;
                     if(f!=NULL){
                         numRead = f->Read(buff,size);
@@ -236,7 +236,7 @@ ExceptionHandler(ExceptionType which)
                 }
                 else{
                     ioLock->Acquire();
-                    OpenFile *f = currentThread->space->fileVector->Resolve(id);
+                    OpenFile *f = currentThread->fileTable->Resolve(id);
                     if(f!=NULL){
                         f->Write(buff,size);
                     }
@@ -248,17 +248,17 @@ ExceptionHandler(ExceptionType which)
         }
         case SC_ChangeDirectory:{
             copyStringFromMachine(machine->ReadRegister(4),buff,MAX_STRING_SIZE);
-            int sector = fileSystem->ChangeDir(buff,currentThread->space->currentSector);
-            currentThread->space->currentSector = sector;
+            int sector = fileSystem->ChangeDir(buff,currentThread->currentSector);
+            currentThread->currentSector = sector;
             machine->WriteRegister(2,sector);
             break;
         }
         case SC_Open:{
             copyStringFromMachine(machine->ReadRegister(4),buff,MAX_STRING_SIZE);
             if(buff != NULL){
-                OpenFile *f = fileSystem->Open(buff,currentThread->space->currentSector);
+                OpenFile *f = fileSystem->Open(buff,currentThread->currentSector);
                 if(f != NULL){
-                    OpenFileId id = currentThread->space->fileVector->Insert(f);
+                    OpenFileId id = currentThread->fileTable->Insert(f);
                     machine->WriteRegister(2,id);
                 }
             }
@@ -269,13 +269,13 @@ ExceptionHandler(ExceptionType which)
         }
         case SC_Close:{
             OpenFileId id = machine->ReadRegister(4);
-            currentThread->space->fileVector->Remove(id);
+            currentThread->fileTable->Remove(id);
             break;
         }
         case SC_MakeDirectory:{
             copyStringFromMachine(machine->ReadRegister(4),buff,MAX_STRING_SIZE);
             //printf("Created from : %d\n", currentThread->space->currentSector);
-            if(fileSystem->MakeDir(buff,0, currentThread->space->currentSector)){
+            if(fileSystem->MakeDir(buff,0, currentThread->currentSector)){
                 machine->WriteRegister(2,1);
 
             }
@@ -286,7 +286,7 @@ ExceptionHandler(ExceptionType which)
         }
  	case SC_Remove:{
             copyStringFromMachine(machine->ReadRegister(4),buff,MAX_STRING_SIZE);
-	    fileSystem->Remove(buff, currentThread->space->currentSector); 
+	    fileSystem->Remove(buff, currentThread->currentSector); 
             break;
         }    
 #endif //FILESYS

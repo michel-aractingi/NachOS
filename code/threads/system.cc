@@ -11,6 +11,7 @@
 // These are all initialized and de-allocated by this file.
 
 
+OpenFileTable *globalFileTable;
 Thread *currentThread;		// the thread we are running now
 Thread *threadToBeDestroyed;	// the thread that just finished
 Scheduler *scheduler;		// the ready list
@@ -40,7 +41,6 @@ Lock *memLock;
 Machine *machine;		// user program memory and registers
 SynchConsole *synchconsole;
 Lock *ioLock;               // lock for making Read/Write atomic
-OpenFileTable *globalFileTable;
 #endif
 
 #ifdef NETWORK
@@ -156,7 +156,8 @@ Initialize (int argc, char **argv)
     scheduler = new Scheduler ();	// initialize the ready queue
     if (randomYield)		// start the timer (if needed)
 	timer = new Timer (TimerInterruptHandler, 0, randomYield);
-
+    
+    globalFileTable = new OpenFileTable();
     threadToBeDestroyed = NULL;
 
     // We didn't explicitly allocate the current thread we are running in.
@@ -172,7 +173,6 @@ Initialize (int argc, char **argv)
     synchconsole = new SynchConsole(NULL,NULL);
     PFN = new FrameProvider(NumPhysPages);
 	ioLock = new Lock("IO Lock");               // lock for making Read/Write atomic
-	globalFileTable = new OpenFileTable();
 #endif
 
 #ifdef FILESYS
@@ -225,7 +225,7 @@ Cleanup ()
 #ifdef FILESYS
     delete synchDisk;
 #endif
-
+    delete globalFileTable;
     delete timer;
     delete scheduler;
     delete interrupt;

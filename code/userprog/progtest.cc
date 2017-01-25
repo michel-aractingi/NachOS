@@ -50,9 +50,6 @@ StartProcess (char *filename)
    space->Addid(currentThread->Tid,currentThread->numberOfThread);
    currentThread->space->semJoin[currentThread->numberOfThread].semaphore = new Semaphore ("Join Semaphore",0);
 
-    FileVector *vector = new(std::nothrow) FileVector();
-    space->fileVector = vector;
-
 ///
     delete executable;		// close file
 

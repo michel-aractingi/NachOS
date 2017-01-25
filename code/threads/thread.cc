@@ -45,6 +45,8 @@ Thread::Thread (const char *threadName)
     // user threads.
     for (int r=NumGPRegs; r<NumTotalRegs; r++)
       userRegisters[r] = 0;
+    fileTable = new FileVector();
+    currentSector = 1;
 #endif
 }
 
@@ -109,6 +111,7 @@ Thread::Fork (VoidFunctionPtr func, int arg)
     if(this->space == NULL){
     this->space = currentThread->space;
 }
+
 #endif // USER_PROGRAM
 
     IntStatus oldLevel = interrupt->SetLevel (IntOff);

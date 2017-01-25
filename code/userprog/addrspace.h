@@ -65,8 +65,6 @@ class AddrSpace
     BitMap *bitmap;
     SemJoin *semJoin;
     int GetPid();
-    int currentSector;
-    FileVector *fileVector;
   private:
       TranslationEntry * pageTable;	// Assume linear page table translation
     // for now!

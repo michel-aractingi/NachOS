@@ -71,7 +71,7 @@ void createProc(int lol) {
 void do_ForkExec(char *f) {
 
 #ifdef FILESYS
-  OpenFile* exec = fileSystem->Open(f,currentThread->space->currentSector);
+  OpenFile* exec = fileSystem->Open(f,currentThread->currentSector);
 #endif
 #ifdef FILESYS_STUB
   OpenFile *exec = fileSystem->Open(f);
@@ -81,8 +81,6 @@ void do_ForkExec(char *f) {
     }
   //fprintf(stdout,"reached\n"); 
   AddrSpace* space = new AddrSpace (exec);
-    FileVector *vector = new(std::nothrow) FileVector();
-    space->fileVector = vector;
   Thread* proc = new Thread(f);
 
   machine->forklock->P();

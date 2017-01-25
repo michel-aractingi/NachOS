@@ -27,6 +27,7 @@ extern void Initialize (int argc, char **argv);	// Initialization,
 						// called before anything else
 extern void Cleanup ();		// Cleanup, called when
 						// Nachos is done.
+extern OpenFileTable *globalFileTable;
 extern Semaphore *exitLock;
 extern Thread *currentThread;	// the thread holding the CPU
 extern Thread *threadToBeDestroyed;	// the thread that just finished
@@ -43,7 +44,6 @@ extern FrameProvider *PFN;
 extern Machine *machine;	// user program memory and registers
 extern SynchConsole *synchconsole;
 extern Lock *ioLock;               // lock for making Read/Write atomic
-extern OpenFileTable *globalFileTable;
 #endif
 
 #ifdef FILESYS_NEEDED		// FILESYS or FILESYS_STUB
