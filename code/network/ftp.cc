@@ -9,30 +9,35 @@
 #include "interrupt.h"
 
 void Ftp::send(PacketHeader pktHdr, MailHeader mailHdr,char* filename){
+	std::string basepath("/home/shah/NachOS/code/network/ServerFiles/");
+	std::string filen(filename);
+	basepath+=filen;
 	FILE *file;
 	char *code = new char[MaxFilePacketLength];
 
-	file = fopen(filename, "rb");
-
-	printf("here");
-	fflush(stdout);
+	file = fopen((char*)basepath.c_str(), "rb");
+	if(!file){	
+		printf("Error in Openning File\n");
+		fflush(stdout);
+		interrupt->Halt();		
+	}	
 	int count=0;
 	do 
 	{
-	code[count] = (char)fgetc(file);
-	count++;
-	if(count == MaxFilePacketLength){
-	mailHdr.length = strlen(code) + 1;
-	postOffice->Send(pktHdr, mailHdr,code);	
-	printf("%s\n",code);
-	fflush(stdout);
-	count=0;	
-	}
+		code[count] = (char)fgetc(file);
+		count++;
+		if(count == MaxFilePacketLength){
+			mailHdr.length = strlen(code) + 1;
+			postOffice->Send(pktHdr, mailHdr,code);	
+			printf("%s\n",code);
+			fflush(stdout);
+			count=0;	
+		}
 
 	} while(code[count-1] != EOF);
 	if(count<MaxFilePacketLength){
-	code[count-1]='\0';
-	postOffice->Send(pktHdr, mailHdr,code);
+		code[count-1]='\0';
+		postOffice->Send(pktHdr, mailHdr,code);
 	}
 	mailHdr.length = strlen("##EndOfMessage##") + 1;
 	postOffice->Send(pktHdr, mailHdr,"##EndOfMessage##");
@@ -53,7 +58,15 @@ void Ftp::receive(int box, PacketHeader *pktHdr, MailHeader *mailHdr, const char
 			break;
 		message+=data;
 	}
-	printf("Received Message  after joining is : %s\n\n",message.c_str());
+	FILE *file;
 	data = message.c_str();
+
+	file = fopen("/home/shah/NachOS/code/network/ClientFiles/testfile", "wb");
+	for(int i=0;data[i]!='\0';i++){
+		fputc((char)data[i],file);
+	}
+
+	//printf("Received Message  after joining is : %s\n\n",message.c_str());
+	
 }
 

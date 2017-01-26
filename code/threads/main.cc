@@ -59,7 +59,11 @@
 extern void ThreadTest (void), Copy (char *unixFile, char *nachosFile), Lists();
 extern void Print (char *file), PerformanceTest (void), FileSystemShell(void);
 extern void StartProcess (char *file), ConsoleTest (char *in, char *out), SynchConsoleTest(char *in, char *out);
-extern void MailTest (int networkID,int machineID);
+extern void MailTest (int networkID);
+extern void FileTest (int networkID,int machineID);
+extern void VspTest (int networkID,int machineID);
+extern void TcpTest (int networkID,int machineID);
+extern void RingTest (int networkID,int machineID);
 
 //----------------------------------------------------------------------
 // main
@@ -175,9 +179,26 @@ main (int argc, char **argv)
 		Delay (2);	// delay for 2 seconds
 		// to give the user time to 
 		// start up another nachos
-		
-		MailTest (atoi (*(argv + 3)),atoi(*(argv+1)));
+		if(!strcmp (*(argv+4), "-F")){
+		FileTest(atoi (*(argv + 3)),atoi(*(argv+1)));
 		argCount = 2;
+		}
+		if(!strcmp (*(argv+4), "-T")){
+		TcpTest(atoi (*(argv + 3)),atoi(*(argv+1)));
+		argCount = 2;
+		}
+		if(!strcmp (*(argv+4), "-V")){
+		VspTest(atoi (*(argv + 3)),atoi(*(argv+1)));
+		argCount = 2;
+		}
+		if(!strcmp (*(argv+4), "-R")){
+		RingTest(atoi (*(argv + 3)),atoi(*(argv+1)));
+		argCount = 2;
+		}
+		if(!strcmp (*(argv+4), "-S")){
+		MailTest(atoi (*(argv + 3)));
+		argCount = 1;
+		}
 	    }
 #endif // NETWORK
       }

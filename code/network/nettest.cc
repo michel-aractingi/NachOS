@@ -35,7 +35,7 @@
 //	4. wait for an acknowledgement from the other machine to our 
 //	    original message
 //Mail test for 10 messages
-/*void
+void
 MailTest(int farAddr)
 {
     PacketHeader outPktHdr, inPktHdr;
@@ -84,7 +84,7 @@ MailTest(int farAddr)
      }
     // Then we're done!
     interrupt->Halt();
-}*/
+}
 //Ring Topology of n-Machines
 void
 RingTest(int farAddr,int ownAddr)
@@ -208,7 +208,7 @@ VspTest(int farAddr,int ownAddr)
 		outMailHdr.to = 0;
 		outMailHdr.from = 1;
 		vsp->ParseMessageAndPopulate(outPktHdr,outMailHdr,"heeeeeellllllllllllllllllllllllllllllllllllllllooooooooooooooooo");
-		//vsp->Send(outPktHdr,outMailHdr,);
+		
 	}
 	else{
 		PacketHeader inPktHdr;
@@ -221,7 +221,7 @@ VspTest(int farAddr,int ownAddr)
 }
 
 void 
-MailTest(int farAddr,int ownAddr)
+FileTest(int farAddr,int ownAddr)
 {
 	if(ownAddr==0){
 		PacketHeader outPktHdr;
@@ -230,7 +230,7 @@ MailTest(int farAddr,int ownAddr)
 		outMailHdr.to = 0;
 		outMailHdr.from = 1;
 		Ftp ftp;
-		ftp.send(outPktHdr,outMailHdr,(char*)"/home/shah/NachOS/code/network/test");
+		ftp.send(outPktHdr,outMailHdr,(char*)"test");
 	}
 	else{
 		PacketHeader inPktHdr;
