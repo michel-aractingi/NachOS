@@ -22,6 +22,8 @@
 #include "network.h"
 #include "post.h"
 #include "interrupt.h"
+#include "tcp.h"
+#include "vsp.h"
 
 // Test out message delivery, by doing the following:
 //	1. send a message to the machine with ID "farAddr", at mail box #0
@@ -29,8 +31,8 @@
 //	3. send an acknowledgment for the other machine's message
 //	4. wait for an acknowledgement from the other machine to our 
 //	    original message
-/*
-void
+//Mail test for 10 messages
+/*void
 MailTest(int farAddr)
 {
     PacketHeader outPktHdr, inPktHdr;
@@ -82,7 +84,7 @@ MailTest(int farAddr)
 }*/
 //Ring Topology of n-Machines
 void
-MailTest(int farAddr,int ownAddr)
+RingTest(int farAddr,int ownAddr)
 {
 	PacketHeader outPktHdr, inPktHdr;
 	MailHeader outMailHdr, inMailHdr;
@@ -124,7 +126,7 @@ MailTest(int farAddr,int ownAddr)
 		outMailHdr.length = strlen(ack) + 1;
 		postOffice->Send(outPktHdr, outMailHdr, ack); 
 		// keep packet for some time
-		for(int i=0;i<2550000;i++);
+		Delay(2);
 		// send forward in circle
 		outPktHdr.to = farAddr;		
 		outMailHdr.to = 0;
@@ -145,3 +147,82 @@ MailTest(int farAddr,int ownAddr)
 
         
 }
+//TCP test in ring topology
+void
+MailTest(int farAddr,int ownAddr)
+{
+	PacketHeader outPktHdr, inPktHdr;
+	MailHeader outMailHdr, inMailHdr;
+	Tcp tcp;
+	const char * data = "Token";
+
+        char buffer[MaxMailSize];
+        printf("Machine %d\n",ownAddr);
+	// Send the first message if machine 0
+	if(ownAddr==0){
+		outPktHdr.to = farAddr;		
+		outMailHdr.to = 0;
+		outMailHdr.from = 1;
+		outMailHdr.length = strlen(data) + 1;
+		bool acknowledge=false;	
+		tcp.Send(outPktHdr, outMailHdr, data,&acknowledge);
+		tcp.Receive(0, &inPktHdr, &inMailHdr, buffer);
+		
+	}
+	// Wait for the first message from the other machine if not machine 0.
+	else{
+		tcp.Receive(0, &inPktHdr, &inMailHdr, buffer);
+		// keep packet for some time
+		Delay(2);
+		bool acknowledge=false;
+		// send forward in circle
+		outPktHdr.to = farAddr;		
+		outMailHdr.to = 0;
+		outMailHdr.from = 1;
+		outMailHdr.length = strlen(buffer) + 1;
+		tcp.Send(outPktHdr, outMailHdr, buffer,&acknowledge); 
+		
+
+	}
+
+    // Then we're done!
+    interrupt->Halt();
+
+ 
+
+        
+}
+
+void
+VspTest(int farAddr,int ownAddr)
+{
+	if(ownAddr == 0){
+		Vsp *vsp= new Vsp();
+		PacketHeader outPktHdr;
+		MailHeader outMailHdr;
+		outPktHdr.to = farAddr;	
+		outPktHdr.from = ownAddr;
+		outMailHdr.to = 0;
+		outMailHdr.from = 1;
+		vsp->ParseMessageAndPopulate(outPktHdr,outMailHdr,"heeeeeellllllllllllllllllllllllllllllllllllllllooooooooooooooooo");
+		//vsp->Send(outPktHdr,outMailHdr,);
+	}
+	else{
+		PacketHeader inPktHdr;
+		MailHeader inMailHdr;
+		Vsp *vsp = new Vsp();
+		char buffer[MaxMailSize];
+		vsp->Receive(0, &inPktHdr, &inMailHdr, buffer);
+	}
+	interrupt->Halt();
+}
+/*
+void 
+MailTest(int farAddr,int ownAddr)
+{	
+
+	//Machine 0 Server Considered Server here 
+
+	interrupt->Halt();
+
+}*/
