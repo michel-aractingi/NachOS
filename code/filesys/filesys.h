@@ -3,6 +3,7 @@
 
 #include "copyright.h"
 #include "openfile.h"
+#include "filetable.h"
 #include <new>
 
 // these variables are no longer apart of the FileSystem class because of
@@ -41,6 +42,8 @@ class FileSystem {
 };
 
 #else // FILESYS
+
+
 class FileSystem {
 public:
     FileSystem(bool format);		// Initialize the file system.
@@ -64,8 +67,10 @@ public:
     void List(int dirSector);			// List all the files in the file system
 
     void Print();			// List all the files and their contents
+    void Close(char *name,int wdSector);
+
+    OpenFileTable *globalFileTable;
 
 };
 #endif
 #endif // FS_H
-
