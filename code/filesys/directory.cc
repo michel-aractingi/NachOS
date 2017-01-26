@@ -200,11 +200,20 @@ bool Directory::Remove(char *name)
 
 void Directory::List(int tabs)
 {
+    FileHeader *hdr = new(std::nothrow) FileHeader();
     for (int i = 2; i < tableSize; i++) {
         if (table[i].inUse) {
             for(int j = 0; j < tabs; ++j)
                 printf("\t");
-            printf("%s\n", table[i].name);
+            hdr->FetchFrom(table[i].sector);
+            if(table[i].isDir == true){
+                printf("%s\t-d\n", table[i].name);
+            }
+            else{
+                printf("%s \t filesize : %d\n", table[i].name,hdr->FileLength());
+            }
+
+
             if(table[i].isDir && strcmp(table[i].name, ".") && strcmp(table[i].name, "..")) {
                 Directory *dir = new(std::nothrow) Directory(10);
                 OpenFile *dirFile = new(std::nothrow) OpenFile(table[i].sector);

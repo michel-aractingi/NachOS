@@ -174,6 +174,7 @@ FileSystem::FileSystem(bool format)
         freeMapFile = new(std::nothrow) OpenFile(FreeMapSector);
         directoryFile = new(std::nothrow) OpenFile(DirectorySector);
     }
+    globalFileTable = new OpenFileTable();
 
 }
 
@@ -392,8 +393,9 @@ FileSystem::Open(char *name, int wdSector)
     OpenFile *dirFile = new(std::nothrow) OpenFile(wdSector);
     directory->FetchFrom(dirFile);
     sector = directory->Find(name);
-    if (sector >= 0)
-        openFile = new(std::nothrow) OpenFile(sector);	// name was found in directory
+    if (sector >= 0) {
+        openFile = new(std::nothrow) OpenFile(sector);    // name was found in directory
+    }
     directoryLock->Release();
     delete directory;
     delete dirFile;
@@ -435,7 +437,6 @@ FileSystem::Remove(char *name, int wdSector)
     directory = new(std::nothrow) Directory(NumDirEntries);
     directory->FetchFrom(dirFile);
     sector = directory->Find(name);
-    printf("trying to remove %s %d\n",name, sector);
     if (sector == -1) {
         delete directory;
         delete dirFile;

@@ -262,7 +262,16 @@ ExceptionHandler(ExceptionType which)
                 OpenFile *f = fileSystem->Open(buff,currentThread->currentSector);
                 if(f != NULL){
                     OpenFileId id = currentThread->fileTable->Insert(f);
+                    if(id > -1) {
+                        printf("File %s opened successfully with id : %d\n", buff,id);
+                    }
+                    else{
+                        printf("File %s open not successfull, close some files\n", buff);
+                    }
                     machine->WriteRegister(2,id);
+                }
+                else{
+                    printf("Invalid filename or path %s \n", buff);
                 }
             }
             else {
@@ -272,7 +281,10 @@ ExceptionHandler(ExceptionType which)
         }
         case SC_Close:{
             OpenFileId id = machine->ReadRegister(4);
-            currentThread->fileTable->Remove(id);
+            if(id > -1){
+                currentThread->fileTable->Remove(id);
+                printf("File closed successfully with id : %d\n",id);
+            }
             break;
         }
         case SC_MakeDirectory:{
