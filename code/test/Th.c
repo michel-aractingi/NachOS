@@ -27,7 +27,7 @@ PutInt(a);PutChar('\n');PutInt(b);PutChar('\n');
  b = UserThreadCreate(delay,(void*)2);
 PutInt(a);PutChar('\n');PutChar('\n');PutInt(b);PutChar('\n');
 
-
+return 0;
 
 
 }
