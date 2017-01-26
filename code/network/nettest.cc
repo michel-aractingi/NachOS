@@ -24,6 +24,9 @@
 #include "interrupt.h"
 #include "tcp.h"
 #include "vsp.h"
+#include "ftp.h"
+
+
 
 // Test out message delivery, by doing the following:
 //	1. send a message to the machine with ID "farAddr", at mail box #0
@@ -149,7 +152,7 @@ RingTest(int farAddr,int ownAddr)
 }
 //TCP test in ring topology
 void
-MailTest(int farAddr,int ownAddr)
+TcpTest(int farAddr,int ownAddr)
 {
 	PacketHeader outPktHdr, inPktHdr;
 	MailHeader outMailHdr, inMailHdr;
@@ -216,13 +219,26 @@ VspTest(int farAddr,int ownAddr)
 	}
 	interrupt->Halt();
 }
-/*
+
 void 
 MailTest(int farAddr,int ownAddr)
-{	
-
-	//Machine 0 Server Considered Server here 
-
+{
+	if(ownAddr==0){
+		PacketHeader outPktHdr;
+		MailHeader outMailHdr;
+		outPktHdr.to = farAddr;	
+		outMailHdr.to = 0;
+		outMailHdr.from = 1;
+		Ftp ftp;
+		ftp.send(outPktHdr,outMailHdr,(char*)"/home/shah/NachOS/code/network/test");
+	}
+	else{
+		PacketHeader inPktHdr;
+		MailHeader inMailHdr;
+		Ftp ftp;
+		char buffer[MaxMailSize];
+		ftp.receive(0, &inPktHdr, &inMailHdr, buffer);
+	}
 	interrupt->Halt();
 
-}*/
+}
